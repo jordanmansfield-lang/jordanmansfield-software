@@ -15,6 +15,17 @@ for y in range(S):
         px[x, y] = max(0, min(255, int(random.gauss(238, 24))))
 img.save(OUT + "/assets/grain.png", optimize=True)
 
+# ---------- Tonal releases ----------
+# To ship a new version: drop Tonal-<version>.ccx into public/downloads/tonal/,
+# update these lines, run `python3 build.py`, commit and push. Every installed
+# copy of Tonal reads version.json and offers the update.
+TONAL = {
+    "version": "1.1.2",
+    "summary": "One-step undo",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
+    "min_premiere": "25.6",
+}
+TONAL_FILE = f"downloads/tonal/Tonal-{TONAL['version']}.ccx"
+
 PROJECTS = [
     {
         "slug": "framesync", "name": "FrameSync", "name_html": "Frame<em>Sync</em>",
@@ -63,33 +74,24 @@ PROJECTS = [
         "link": ("Open Tenframe", "https://tenframe.jordan-mansfield.workers.dev"),
     },
     {
-        "slug": "film-galleries", "name": "Film Galleries", "name_html": "Film <em>Galleries</em>",
-        "kind": "Web platform", "short": "Private delivery for wedding films",
-        "tag": "Web",
-        "lede": "One private page per couple for their wedding films.",
-        "meta": [("Platform", "Web"), ("Where", "videos.jordanmansfieldweddings.com"), ("Status", "In development")],
+        "slug": "tonal", "name": "Tonal", "name_html": "To<em>nal</em>",
+        "kind": "Premiere Pro plugin", "short": "Proper sliders for Premiere’s classic Lumetri Color",
+        "tag": "Premiere",
+        "lede": "Proper sliders for Premiere Pro’s classic Lumetri Color.",
+        "meta": [("Works with", f"Premiere Pro {TONAL['min_premiere']} or later"), ("Version", TONAL["version"]), ("Tested on", "macOS")],
         "body": [
-            "Wedding films used to reach couples through a gallery embed and a separate showcase link just for downloads. Film Galleries puts it all on one page with its own address for each couple.",
-            "Each gallery has a cover banner, drag-and-drop uploads, and downloads for each film or everything at once.",
+            "The latest Premiere Pro moves colour grading into a new Color tab. The classic Lumetri Color effect is still there to drag onto a clip, but its only controls are rows of raw numbers.",
+            "Tonal is a docked panel that puts sliders back on it: white balance, light, creative and vignette. It edits the Lumetri Color effect already on your clips, so Premiere’s own engine still does the grading. Select several clips and one move changes them all. Keyframed settings are left alone.",
         ],
-        "road": [("Admin", "Create a gallery per couple with a custom address and cover.", "Building"),
-                 ("Delivery", "Streaming, per-film downloads and download-all.", "Building")],
-        "link": None,
-    },
-    {
-        "slug": "myschoolphotograph", "name": "MySchoolPhotograph", "name_html": "MySchool<em>Photograph</em>",
-        "kind": "Web platform", "short": "School photo galleries and print shop",
-        "tag": "Web",
-        "lede": "From photo day to framed prints, in one place.",
-        "meta": [("Platform", "Web"), ("Stack", "Cloudflare Workers · D1 · R2 · Stripe"), ("Status", "Launching")],
-        "body": [
-            "My own school photography platform, replacing a third-party gallery service. A whole shoot is dragged in and split into a gallery for each pupil, with watermarks, digital downloads and a print shop for parents.",
-            "A quick-shoot mode uses a unique QR code for each child, photographed before their portraits, so a shoot sorts itself into galleries.",
-        ],
-        "road": [("Galleries and shop", "Bulk import, pupil galleries, downloads and prints.", "Built"),
-                 ("Quick shoot", "QR-coded cards that split a shoot into galleries.", "Testing"),
-                 ("Public launch", "Moving to www.myschoolphotograph.co.uk.", "Now")],
-        "link": ("Visit MySchoolPhotograph", "https://www.myschoolphotograph.co.uk"),
+        "shot": ("assets/tonal-panel.jpg", "The Tonal panel: sliders for temperature, tint, saturation, exposure, contrast, highlights and shadows"),
+        "steps_title": "Install",
+        "steps": [("Download", "Get the .ccx file using the button above.", ""),
+                  ("Install", "Quit Premiere, then double-click the file. Creative Cloud asks you to confirm. It warns you to only install plugins from sources you trust.", ""),
+                  ("Open", "In Premiere, choose Window → UXP Plugins → Tonal, then dock the panel wherever suits you.", ""),
+                  ("Update", "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.", "")],
+        "road": [],
+        "link": (f"Download Tonal {TONAL['version']}", TONAL_FILE),
+        "download": True,
     },
 ]
 
@@ -157,7 +159,7 @@ index = head("Jordan Mansfield", "Wedding photographer in Horsham, West Sussex, 
 <div class="wrap hero__inner">
 <p class="eyebrow mono">Small software, happy accidents</p>
 <h1 class="display">Jordan<br><em>Mansfield</em></h1>
-<p class="intro">Wedding photographer in Horsham, West Sussex. Between shoots I build the software my work runs on: backup tools, galleries, and the back office behind it all.</p>
+<p class="intro">Wedding photographer in Horsham, West Sussex. Between shoots I build the software my work runs on: backup tools, editing plugins, and the back office behind it all.</p>
 </div>
 </section>
 
@@ -199,8 +201,25 @@ for i, p in enumerate(PROJECTS):
     nxt = PROJECTS[(i + 1) % len(PROJECTS)]
     meta = "".join(f'<div class="meta__item"><dt class="mono muted">{k}</dt><dd>{v}</dd></div>' for k, v in p["meta"])
     body = "".join(f"<p>{b}</p>" for b in p["body"])
-    road = "".join(f'''<li class="road__row"><span class="mono muted row__n">{j:02d}</span><span class="road__name">{a}</span><span class="muted road__desc">{b}</span><span class="mono road__status">{s}</span></li>''' for j, (a, b, s) in enumerate(p["road"], 1))
-    link = f'<p class="cta"><a href="{p["link"][1]}">{p["link"][0]} ↗</a></p>' if p["link"] else ""
+    if p["link"] and p.get("download"):
+        link = f'<p class="cta"><a href="{p["link"][1]}" download>{p["link"][0]} ↓</a></p>'
+    elif p["link"]:
+        link = f'<p class="cta"><a href="{p["link"][1]}">{p["link"][0]} ↗</a></p>'
+    else:
+        link = ""
+    if p.get("shot"):
+        shot = f'<figure class="shot"><img src="{p["shot"][0]}" alt="{html.escape(p["shot"][1])}"></figure>'
+    else:
+        shot = '<figure class="shot"><span class="mono muted">[SCREENSHOT]</span></figure>'
+    def rows_section(title, items):
+        if not items:
+            return ""
+        lis = "".join(f'''<li class="road__row"><span class="mono muted row__n">{j:02d}</span><span class="road__name">{a}</span><span class="muted road__desc">{b}</span><span class="mono road__status">{st}</span></li>''' for j, (a, b, st) in enumerate(items, 1))
+        return f'''<section class="wrap section">
+<div class="section__head"><h2>{title}</h2><span class="mono muted">({len(items):02d})</span></div>
+<ol class="rows">{lis}</ol>
+</section>'''
+    sections = rows_section(p.get("steps_title", ""), p.get("steps", [])) + rows_section("Roadmap", p["road"])
     page = head(f'{p["name"]} — Jordan Mansfield', p["lede"]) + f'''
 {header(back=True)}
 <main id="main">
@@ -216,7 +235,7 @@ for i, p in enumerate(PROJECTS):
 </section>
 
 <section class="wrap section--tight">
-<figure class="shot"><span class="mono muted">[SCREENSHOT]</span></figure>
+{shot}
 </section>
 
 <section class="wrap section split">
@@ -224,10 +243,7 @@ for i, p in enumerate(PROJECTS):
 <div class="split__body muted">{body}</div>
 </section>
 
-<section class="wrap section">
-<div class="section__head"><h2>Roadmap</h2><span class="mono muted">({len(p["road"]):02d})</span></div>
-<ol class="rows">{road}</ol>
-</section>
+{sections}
 
 <section class="wrap section--tight">
 <a class="next" href="{nxt["slug"]}.html"><span class="mono muted">Next — {PROJECTS.index(nxt)+1:02d}</span><span class="next__name">{nxt["name"]} <em>→</em></span></a>
@@ -255,4 +271,17 @@ with open(OUT + "/404.html", "w") as f:
 
 with open(OUT + "/assets/favicon.svg", "w") as f:
     f.write('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><radialGradient id="g" cx="0.3" cy="0.35" r="0.75"><stop offset="0" stop-color="#f2b25c"/><stop offset="0.55" stop-color="#e9772f"/><stop offset="1" stop-color="#e9772f" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="14" fill="#f7f5f0"/><circle cx="26" cy="28" r="30" fill="url(#g)"/></svg>''')
+# ---------- Tonal update feed (read by the plugin) ----------
+import json
+os.makedirs(OUT + "/downloads/tonal", exist_ok=True)
+if not os.path.exists(f"{OUT}/{TONAL_FILE}"):
+    print(f"WARNING: {TONAL_FILE} is missing from public/ (the download link will 404)")
+with open(OUT + "/downloads/tonal/version.json", "w") as f:
+    json.dump({
+        "version": TONAL["version"],
+        "summary": TONAL["summary"],
+        "page": "https://jordanmansfield.dev/tonal.html",
+        "download": "https://jordanmansfield.dev/" + TONAL_FILE,
+    }, f, indent=2)
+
 print("built", sorted(os.listdir(OUT)))
