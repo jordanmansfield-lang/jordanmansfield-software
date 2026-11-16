@@ -48,6 +48,7 @@ PROJECTS = [
         "tag": "Web",
         "lede": "The business operating system for wedding photographers and videographers.",
         "meta": [("Platform", "Web"), ("Stack", "pnpm monorepo · Railway · Clerk"), ("Status", "Running my own business")],
+        "shot": ("assets/picturedesk-projects.jpg", "PictureDesk’s Projects view: wedding cards with each couple’s delivery checklist and how many days each is past due"),
         "body": [
             "PictureDesk is the platform I always wished existed. Enquiries, projects, contacts, invoices and suppliers live in one place, built photographer-first rather than as a generic CRM.",
             "It runs my own bookings and is the single source of truth for the business.",
