@@ -74,35 +74,6 @@ PROJECTS = [
         "link": ("Open Tenframe", "https://tenframe.jordan-mansfield.workers.dev"),
     },
     {
-        "slug": "film-galleries", "name": "Film Galleries", "name_html": "Film <em>Galleries</em>",
-        "kind": "Web platform", "short": "Private delivery for wedding films",
-        "tag": "Web",
-        "lede": "One private page per couple for their wedding films.",
-        "meta": [("Platform", "Web"), ("Where", "videos.jordanmansfieldweddings.com"), ("Status", "In development")],
-        "body": [
-            "Wedding films used to reach couples through a gallery embed and a separate showcase link just for downloads. Film Galleries puts it all on one page with its own address for each couple.",
-            "Each gallery has a cover banner, drag-and-drop uploads, and downloads for each film or everything at once.",
-        ],
-        "road": [("Admin", "Create a gallery per couple with a custom address and cover.", "Building"),
-                 ("Delivery", "Streaming, per-film downloads and download-all.", "Building")],
-        "link": None,
-    },
-    {
-        "slug": "myschoolphotograph", "name": "MySchoolPhotograph", "name_html": "MySchool<em>Photograph</em>",
-        "kind": "Web platform", "short": "School photo galleries and print shop",
-        "tag": "Web",
-        "lede": "From photo day to framed prints, in one place.",
-        "meta": [("Platform", "Web"), ("Stack", "Cloudflare Workers · D1 · R2 · Stripe"), ("Status", "Launching")],
-        "body": [
-            "My own school photography platform, replacing a third-party gallery service. A whole shoot is dragged in and split into a gallery for each pupil, with watermarks, digital downloads and a print shop for parents.",
-            "A quick-shoot mode uses a unique QR code for each child, photographed before their portraits, so a shoot sorts itself into galleries.",
-        ],
-        "road": [("Galleries and shop", "Bulk import, pupil galleries, downloads and prints.", "Built"),
-                 ("Quick shoot", "QR-coded cards that split a shoot into galleries.", "Testing"),
-                 ("Public launch", "Moving to www.myschoolphotograph.co.uk.", "Now")],
-        "link": ("Visit MySchoolPhotograph", "https://www.myschoolphotograph.co.uk"),
-    },
-    {
         "slug": "tonal", "name": "Tonal", "name_html": "To<em>nal</em>",
         "kind": "Premiere Pro plugin", "short": "Proper sliders for Premiere’s classic Lumetri Color",
         "tag": "Premiere",
@@ -188,7 +159,7 @@ index = head("Jordan Mansfield", "Wedding photographer in Horsham, West Sussex, 
 <div class="wrap hero__inner">
 <p class="eyebrow mono">Small software, happy accidents</p>
 <h1 class="display">Jordan<br><em>Mansfield</em></h1>
-<p class="intro">Wedding photographer in Horsham, West Sussex. Between shoots I build the software my work runs on: backup tools, galleries, and the back office behind it all.</p>
+<p class="intro">Wedding photographer in Horsham, West Sussex. Between shoots I build the software my work runs on: backup tools, editing plugins, and the back office behind it all.</p>
 </div>
 </section>
 
