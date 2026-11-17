@@ -26,6 +26,16 @@ TONAL = {
 }
 TONAL_FILE = f"downloads/tonal/Tonal-{TONAL['version']}.ccx"
 
+# ---------- Dolly releases ----------
+# Same routine as Tonal: drop Dolly-<version>.ccx into public/downloads/dolly/,
+# update these lines, run `python3 build.py`, commit and push.
+DOLLY = {
+    "version": "1.0.0",
+    "summary": "",  # one short line shown in the panel's update notice
+    "min_premiere": "25.6",
+}
+DOLLY_FILE = f"downloads/dolly/Dolly-{DOLLY['version']}.ccx"
+
 PROJECTS = [
     {
         "slug": "framesync", "name": "FrameSync", "name_html": "Frame<em>Sync</em>",
@@ -92,6 +102,26 @@ PROJECTS = [
                   ("Update", "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.", "")],
         "road": [],
         "link": (f"Download Tonal {TONAL['version']}", TONAL_FILE),
+        "download": True,
+    },
+    {
+        "slug": "dolly", "name": "Dolly", "name_html": "Dol<em>ly</em>",
+        "kind": "Premiere Pro plugin", "short": "Slow push-ins on every clip, at one steady speed",
+        "tag": "Premiere",
+        "lede": "Slow push-ins for Premiere Pro, on every clip at once.",
+        "meta": [("Works with", f"Premiere Pro {DOLLY['min_premiere']} or later"), ("Version", DOLLY["version"])],
+        "body": [
+            "A subtle push-in means two Scale keyframes on every clip, set by hand hundreds of times a film. Presets help, but they reset a cropped clip’s Scale, and their keyframes drift off the clip as soon as you trim or slip it.",
+            "Dolly is a docked panel. Pick a speed, select your clips and click once. Every clip zooms from its own starting Scale at the same pace, with keyframes on its first and last frames. After an edit, Refit all puts every zoom back on its clip’s ends, keeping each clip’s speed.",
+        ],
+        "shot": ("assets/dolly-panel.jpg", "The Dolly panel: In and Out, a speed slider set to 0.5% a second, and a Push in button for 24 selected clips"),
+        "steps_title": "Install",
+        "steps": [("Download", "Get the .ccx file using the button above.", ""),
+                  ("Install", "Quit Premiere, then double-click the file. Creative Cloud asks you to confirm. It warns you to only install plugins from sources you trust.", ""),
+                  ("Open", "In Premiere, choose Window → UXP Plugins → Dolly, then dock the panel wherever suits you.", ""),
+                  ("Update", "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.", "")],
+        "road": [],
+        "link": (f"Download Dolly {DOLLY['version']}", DOLLY_FILE),
         "download": True,
     },
 ]
@@ -272,17 +302,18 @@ with open(OUT + "/404.html", "w") as f:
 
 with open(OUT + "/assets/favicon.svg", "w") as f:
     f.write('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><radialGradient id="g" cx="0.3" cy="0.35" r="0.75"><stop offset="0" stop-color="#f2b25c"/><stop offset="0.55" stop-color="#e9772f"/><stop offset="1" stop-color="#e9772f" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="14" fill="#f7f5f0"/><circle cx="26" cy="28" r="30" fill="url(#g)"/></svg>''')
-# ---------- Tonal update feed (read by the plugin) ----------
+# ---------- plugin update feeds (each plugin reads its own version.json) ----------
 import json
-os.makedirs(OUT + "/downloads/tonal", exist_ok=True)
-if not os.path.exists(f"{OUT}/{TONAL_FILE}"):
-    print(f"WARNING: {TONAL_FILE} is missing from public/ (the download link will 404)")
-with open(OUT + "/downloads/tonal/version.json", "w") as f:
-    json.dump({
-        "version": TONAL["version"],
-        "summary": TONAL["summary"],
-        "page": "https://jordanmansfield.dev/tonal.html",
-        "download": "https://jordanmansfield.dev/" + TONAL_FILE,
-    }, f, indent=2)
+for slug, name, rel, rel_file in [("tonal", "Tonal", TONAL, TONAL_FILE), ("dolly", "Dolly", DOLLY, DOLLY_FILE)]:
+    os.makedirs(f"{OUT}/downloads/{slug}", exist_ok=True)
+    if not os.path.exists(f"{OUT}/{rel_file}"):
+        print(f"WARNING: {rel_file} is missing from public/ (the download link will 404)")
+    with open(f"{OUT}/downloads/{slug}/version.json", "w") as f:
+        json.dump({
+            "version": rel["version"],
+            "summary": rel["summary"],
+            "page": f"https://jordanmansfield.dev/{slug}.html",
+            "download": "https://jordanmansfield.dev/" + rel_file,
+        }, f, indent=2)
 
 print("built", sorted(os.listdir(OUT)))
