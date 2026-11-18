@@ -20,8 +20,8 @@ img.save(OUT + "/assets/grain.png", optimize=True)
 # update these lines, run `python3 build.py`, commit and push. Every installed
 # copy of Tonal reads version.json and offers the update.
 TONAL = {
-    "version": "1.1.2",
-    "summary": "One-step undo",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
+    "version": "1.2.0",
+    "summary": "Keyframes now work",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
     "min_premiere": "25.6",
 }
 TONAL_FILE = f"downloads/tonal/Tonal-{TONAL['version']}.ccx"
@@ -92,7 +92,7 @@ PROJECTS = [
         "meta": [("Works with", f"Premiere Pro {TONAL['min_premiere']} or later"), ("Version", TONAL["version"]), ("Tested on", "macOS")],
         "body": [
             "The latest Premiere Pro moves colour grading into a new Color tab. The classic Lumetri Color effect is still there to drag onto a clip, but its only controls are rows of raw numbers.",
-            "Tonal is a docked panel that puts sliders back on it: white balance, light, creative and vignette. It edits the Lumetri Color effect already on your clips, so Premiere’s own engine still does the grading. Select several clips and one move changes them all. Keyframed settings are left alone.",
+            "Tonal is a docked panel that puts sliders back on it: white balance, light, creative and vignette. It edits the Lumetri Color effect already on your clips, so Premiere’s own engine still does the grading. Select several clips and one move changes them all. Keyframes work like Effect Controls: once a setting is keyframed, a move sets a keyframe at the playhead.",
         ],
         "shot": ("assets/tonal-panel.jpg", "The Tonal panel: sliders for temperature, tint, saturation, exposure, contrast, highlights and shadows"),
         "steps_title": "Install",
