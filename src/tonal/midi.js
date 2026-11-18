@@ -17,7 +17,8 @@
  *            "last adjusted" actions (reset it, keyframe it)
  */
 (function () {
-  const BRIDGE_URL = "ws://127.0.0.1:51849";
+  // Two spellings of "this Mac": Premiere has been known to refuse one or the other, so alternate.
+  const BRIDGE_URLS = ["ws://127.0.0.1:51849", "ws://localhost:51849"];
   const STORE_KEY = "tonal.midi.v1";
   const GESTURE_IDLE_MS = 600;     // a knob counts as "let go" after this long without movement
   const LEARN_TIMEOUT_MS = 15000;
@@ -55,6 +56,8 @@
     bridgeVersion: "",
     map: {},            // key -> { target, mode }
     learning: null,     // { target, kind: "slider"|"action", until, samples: [] }
+    attempt: 0,
+    lastError: "",      // why the last connection attempt failed, shown on the MIDI screen
     lastIn: {},         // key -> last raw value received (for Fine and Fader)
     lastOut: {},        // key -> last value sent back to the controller
     picked: {},         // key -> true once a fader has caught up with the value
@@ -99,10 +102,18 @@
   /* --------------------------------------------------------- connection */
 
   function connect() {
+    const url = BRIDGE_URLS[midi.attempt++ % BRIDGE_URLS.length];
     let ws;
-    try { ws = new WebSocket(BRIDGE_URL); } catch (e) { retry(); return; }
+    try {
+      ws = new WebSocket(url);
+    } catch (e) {
+      // Premiere refusing the connection outright (e.g. a permission problem) lands here.
+      setError(url, (e && e.message) || String(e));
+      retry();
+      return;
+    }
     midi.ws = ws;
-    ws.onopen = () => { midi.connected = true; render(); sendFeedback(true); };
+    ws.onopen = () => { midi.connected = true; midi.lastError = ""; midi.url = url; render(); sendFeedback(true); };
     ws.onmessage = (ev) => {
       let m;
       try { m = JSON.parse(ev.data); } catch (e) { return; }
@@ -116,12 +127,21 @@
       if (was) render();
       retry();
     };
-    ws.onerror = () => { /* onclose follows */ };
+    ws.onerror = (ev) => {
+      const msg = ev && (ev.message || (ev.error && ev.error.message) || ev.reason);
+      setError(url, msg || "no reply");   // onclose follows
+    };
+  }
+  function setError(url, msg) {
+    const text = url.replace("ws://", "") + ": " + msg;
+    if (text !== midi.lastError) { midi.lastError = text; render(); }
   }
   let retryTimer = null;
   function retry() {
     if (retryTimer) return;
-    retryTimer = setTimeout(() => { retryTimer = null; connect(); }, 3000);
+    // try the other address straight away, then wait a few seconds between rounds
+    const delay = midi.attempt % BRIDGE_URLS.length === 0 ? 3000 : 200;
+    retryTimer = setTimeout(() => { retryTimer = null; connect(); }, delay);
   }
 
   /* ----------------------------------------------------- incoming MIDI */
@@ -343,8 +363,14 @@
       st.textContent = midi.devices.length ? "Tonal Bridge · " + midi.devices.join(", ") : "Tonal Bridge connected · no controller plugged in";
       st.className = "tn-midi-status tn-midi-ok";
     } else {
-      st.textContent = "Tonal Bridge isn't running. Install it from jordanmansfield.dev/tonal, then open it.";
+      st.textContent = "Can't reach Tonal Bridge. If it isn't open, install it from jordanmansfield.dev/tonal and open it.";
       st.className = "tn-midi-status";
+      if (midi.lastError) {
+        const err = document.createElement("div");
+        err.className = "tn-midi-error";
+        err.textContent = "Last attempt: " + midi.lastError;
+        st.appendChild(err);
+      }
     }
     if (btn) toggleClass(btn, "tn-midi-live", midi.connected && midi.devices.length > 0);
 

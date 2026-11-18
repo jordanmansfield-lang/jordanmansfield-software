@@ -20,8 +20,8 @@ img.save(OUT + "/assets/grain.png", optimize=True)
 # update these lines, run `python3 build.py`, commit and push. Every installed
 # copy of Tonal reads version.json and offers the update.
 TONAL = {
-    "version": "1.3.0",
-    "summary": "MIDI controller support",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
+    "version": "1.3.1",
+    "summary": "Fixes connecting to Tonal Bridge",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
     "min_premiere": "25.6",
 }
 TONAL_FILE = f"downloads/tonal/Tonal-{TONAL['version']}.ccx"

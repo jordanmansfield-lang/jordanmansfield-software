@@ -248,3 +248,5 @@ body { padding: 0 14px 14px 14px; }
 /* hidden always wins over a block's own display rule */
 .tn-hidden, .tn-diag.tn-hidden, .tn-midi.tn-hidden, .tn-update.tn-hidden { display: none; }
 .tn-btn.tn-active.tn-midi-live { color: #111111; }
+
+.tn-midi-error { color: #9a9a9a; font-family: monospace; font-size: 10px; margin-top: 4px; }

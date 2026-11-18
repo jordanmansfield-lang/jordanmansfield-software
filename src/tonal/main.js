@@ -1093,7 +1093,7 @@ async function renderDiagnostics() {
  * installed automatically, and if the site can't be reached nothing happens.
  */
 const UPDATE_URL = "https://jordanmansfield.dev/downloads/tonal/version.json";
-const BUILT_IN_VERSION = "1.3.0";
+const BUILT_IN_VERSION = "1.3.1";
 const UPDATE_EVERY_MS = 6 * 60 * 60 * 1000;
 
 function currentVersion() {
