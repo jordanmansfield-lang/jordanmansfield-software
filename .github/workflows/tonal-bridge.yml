@@ -1,0 +1,38 @@
+name: Build Tonal Bridge
+
+# Builds the Tonal Bridge Mac app whenever its source changes and attaches the
+# result (and the build log) to the "tonal-bridge-build" pre-release.
+on:
+  push:
+    paths:
+      - "src/tonal-bridge/**"
+      - ".github/workflows/tonal-bridge.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          set -o pipefail
+          cd src/tonal-bridge
+          chmod +x build.sh
+          echo "commit ${GITHUB_SHA}" > build.log
+          ./build.sh 2>&1 | tee -a build.log
+
+      - name: Publish build
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd src/tonal-bridge
+          TAG=tonal-bridge-build
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --prerelease --title "Tonal Bridge (automatic build)" --notes "Built automatically from src/tonal-bridge." --target "$GITHUB_SHA"
+          gh release upload "$TAG" build.log --clobber
+          if [ -f TonalBridge.zip ]; then gh release upload "$TAG" TonalBridge.zip --clobber; fi
