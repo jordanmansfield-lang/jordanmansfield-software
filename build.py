@@ -20,11 +20,15 @@ img.save(OUT + "/assets/grain.png", optimize=True)
 # update these lines, run `python3 build.py`, commit and push. Every installed
 # copy of Tonal reads version.json and offers the update.
 TONAL = {
-    "version": "1.2.0",
-    "summary": "Keyframes now work",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
+    "version": "1.3.0",
+    "summary": "MIDI controller support",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
     "min_premiere": "25.6",
 }
 TONAL_FILE = f"downloads/tonal/Tonal-{TONAL['version']}.ccx"
+# Tonal Bridge: the small Mac app that connects MIDI controllers to Tonal.
+# Built by .github/workflows/tonal-bridge.yml from src/tonal-bridge.
+BRIDGE = {"version": "1.0.0"}
+BRIDGE_FILE = f"downloads/tonal/TonalBridge-{BRIDGE['version']}.zip"
 
 # ---------- Dolly releases ----------
 # Same routine as Tonal: drop Dolly-<version>.ccx into public/downloads/dolly/,
@@ -93,6 +97,7 @@ PROJECTS = [
         "body": [
             "The latest Premiere Pro moves colour grading into a new Color tab. The classic Lumetri Color effect is still there to drag onto a clip, but its only controls are rows of raw numbers.",
             "Tonal is a docked panel that puts sliders back on it: white balance, light, creative and vignette. It edits the Lumetri Color effect already on your clips, so Premiere’s own engine still does the grading. Select several clips and one move changes them all. Keyframes work like Effect Controls: once a setting is keyframed, a move sets a keyframe at the playhead.",
+            "Grade with real knobs, too. Plug in a MIDI controller such as a Behringer X-Touch Mini, click Learn beside a slider, and turn a knob. Buttons can undo, redo, reset and add keyframes, and the controller’s LED rings follow your grade from clip to clip.",
         ],
         "shot": ("assets/tonal-panel.jpg", "The Tonal panel: sliders for temperature, tint, saturation, exposure, contrast, highlights and shadows"),
         "steps_title": "Install",
@@ -100,8 +105,13 @@ PROJECTS = [
                   ("Install", "Quit Premiere, then double-click the file. Creative Cloud asks you to confirm. It warns you to only install plugins from sources you trust.", ""),
                   ("Open", "In Premiere, choose Window → UXP Plugins → Tonal, then dock the panel wherever suits you.", ""),
                   ("Update", "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.", "")],
+        "steps2_title": "MIDI controllers",
+        "steps2": [("Get the Bridge", "Premiere plugins can’t talk to MIDI devices, so a small menu-bar app, Tonal Bridge, does it for them. Download it using the second button above. Mac only.", ""),
+                   ("Open it", "Unzip it and drag Tonal Bridge into Applications. The first time, right-click it and choose Open. It isn’t from the App Store, so macOS asks you to confirm, or to allow it under System Settings → Privacy & Security.", ""),
+                   ("Map your controls", "In Tonal, click MIDI, then Learn beside a slider and turn a knob. Press a button instead to make it reset that slider. Tonal remembers your mappings.", "")],
         "road": [],
         "link": (f"Download Tonal {TONAL['version']}", TONAL_FILE),
+        "link2": (f"Download Tonal Bridge {BRIDGE['version']} for Mac", BRIDGE_FILE),
         "download": True,
     },
     {
@@ -238,6 +248,8 @@ for i, p in enumerate(PROJECTS):
         link = f'<p class="cta"><a href="{p["link"][1]}">{p["link"][0]} ↗</a></p>'
     else:
         link = ""
+    if p.get("link2"):   # an optional second download (e.g. a companion app)
+        link += f'<p class="cta"><a href="{p["link2"][1]}" download>{p["link2"][0]} ↓</a></p>'
     if p.get("shot"):
         shot = f'<figure class="shot"><img src="{p["shot"][0]}" alt="{html.escape(p["shot"][1])}"></figure>'
     else:
@@ -250,7 +262,7 @@ for i, p in enumerate(PROJECTS):
 <div class="section__head"><h2>{title}</h2><span class="mono muted">({len(items):02d})</span></div>
 <ol class="rows">{lis}</ol>
 </section>'''
-    sections = rows_section(p.get("steps_title", ""), p.get("steps", [])) + rows_section("Roadmap", p["road"])
+    sections = rows_section(p.get("steps_title", ""), p.get("steps", [])) + rows_section(p.get("steps2_title", ""), p.get("steps2", [])) + rows_section("Roadmap", p["road"])
     page = head(f'{p["name"]} — Jordan Mansfield', p["lede"]) + f'''
 {header(back=True)}
 <main id="main">

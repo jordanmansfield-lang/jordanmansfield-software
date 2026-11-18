@@ -1,0 +1,250 @@
+/* Tonal — monochrome, minimal.
+   Written for Premiere's UXP layout engine: every box gets an explicit width and
+   display, no CSS grid, no :not(), no text-transform, no native <button> styling.
+   All classes are prefixed tn- so nothing collides with host styles. */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #1d1d1d;
+  color: #d6d6d6;
+  font-family: sans-serif;
+  font-size: 11px;
+}
+body { padding: 0 14px 14px 14px; }
+
+#tn-controls, .tn-section, .tn-section-body, .tn-row, .tn-row-head, .tn-track, .tn-diag {
+  width: 100%;
+}
+
+/* ---------- top bar ---------- */
+.tn-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 0 10px 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #2c2c2c;
+  margin-bottom: 4px;
+}
+.tn-status { display: flex; flex-direction: row; align-items: center; flex: 1; }
+.tn-dot {
+  width: 6px; height: 6px; border-radius: 3px;
+  background-color: #555;
+  margin-right: 8px;
+}
+.tn-dot.tn-on { background-color: #e8e8e8; }
+.tn-dot.tn-warn { background-color: #8a8a8a; }
+#tn-statusText { color: #9a9a9a; }
+
+.tn-actions { display: flex; flex-direction: row; align-items: center; }
+.tn-btn {
+  color: #9a9a9a;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #3a3a3a;
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-size: 10px;
+  margin-left: 6px;
+}
+.tn-btn:hover { color: #eeeeee; border-color: #5a5a5a; }
+.tn-btn.tn-active { color: #111111; background-color: #d8d8d8; border-color: #d8d8d8; }
+.tn-btn.tn-off { color: #555555; border-color: #2c2c2c; }
+
+/* ---------- sections ---------- */
+.tn-section {
+  display: flex;
+  flex-direction: column;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #262626;
+}
+.tn-section-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 0 8px 0;
+}
+.tn-section-title { font-size: 10px; letter-spacing: 1.6px; color: #8d8d8d; }
+.tn-section-head:hover .tn-section-title { color: #e2e2e2; }
+.tn-chev { color: #5c5c5c; font-size: 11px; }
+.tn-section-body { display: flex; flex-direction: column; padding-bottom: 8px; }
+.tn-collapsed .tn-section-body { display: none; }
+
+.tn-sub {
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  color: #5e5e5e;
+  margin: 8px 0 2px 0;
+}
+
+/* ---------- slider rows ---------- */
+.tn-row {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0 7px 0;
+}
+.tn-row.tn-disabled { opacity: 0.35; }
+.tn-row-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.tn-label { color: #cfcfcf; flex: 1; }
+.tn-right { display: flex; flex-direction: row; align-items: center; justify-content: flex-end; }
+.tn-reset {
+  width: 5px; height: 5px; border-radius: 3px;
+  background-color: #8a8a8a;
+  margin-right: 8px;
+  display: none;
+}
+.tn-changed .tn-reset { display: flex; }
+.tn-reset:hover { background-color: #ffffff; }
+/* keyframe diamond: hollow = not keyframed / no keyframe here, filled = keyframe at the playhead */
+.tn-key { font-size: 11px; color: #4a4a4a; margin-right: 8px; width: 12px; text-align: center; }
+.tn-key:hover { color: #bbbbbb; }
+.tn-key.tn-key-on { color: #9a9a9a; }
+.tn-key.tn-key-here { color: #f2f2f2; }
+.tn-key.tn-key-off { color: #333333; }
+.tn-value {
+  width: 46px;
+  text-align: right;
+  color: #7d7d7d;
+  font-family: monospace;
+  font-size: 11px;
+}
+.tn-changed .tn-value { color: #f0f0f0; }
+.tn-value-input {
+  width: 56px;
+  text-align: right;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+/* track: 16px tall hit area; children positioned inside it */
+.tn-track {
+  display: flex;
+  position: relative;
+  height: 16px;
+}
+.tn-line {
+  position: absolute;
+  left: 0; top: 7px;
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+  background-color: #3a3a3a;
+}
+.tn-fill {
+  position: absolute;
+  top: 7px;
+  height: 2px;
+  background-color: #e6e6e6;
+}
+.tn-centre {
+  position: absolute;
+  top: 4px;
+  width: 1px; height: 8px;
+  background-color: #4a4a4a;
+}
+.tn-thumb {
+  position: absolute;
+  top: 3px;
+  width: 10px; height: 10px;
+  margin-left: -5px;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+}
+
+/* gradient tracks — the only colour in the panel, and only where colour is the point */
+.tn-grad .tn-line { height: 3px; top: 6px; }
+.tn-grad .tn-fill { display: none; }
+.tn-temp .tn-line { background-image: linear-gradient(to right, #4a7ec4, #9a9a9a, #d39a3c); }
+.tn-tint .tn-line { background-image: linear-gradient(to right, #4f9e62, #9a9a9a, #b35aa8); }
+.tn-sat  .tn-line { background-image: linear-gradient(to right, #6a6a6a, #8f8f8f 50%, #c4573f 66%, #c9a93a 77%, #4e9d63 88%, #4a74bd); }
+.tn-vib  .tn-line { background-image: linear-gradient(to right, #7a7a7a, #8f8f8f 50%, #b77b5f 75%, #6f8fb6); }
+.tn-exp  .tn-line { background-image: linear-gradient(to right, #0e0e0e, #f4f4f4); }
+.tn-lift .tn-line { background-image: linear-gradient(to right, #0a0a0a, #5a5a5a); }
+.tn-gain .tn-line { background-image: linear-gradient(to right, #8a8a8a, #f4f4f4); }
+
+/* ---------- empty state / misc ---------- */
+.tn-empty { padding: 40px 6px; text-align: center; color: #6c6c6c; }
+.tn-hidden { display: none; }
+
+.tn-diag { display: flex; flex-direction: column; margin-top: 12px; }
+.tn-diag-head {
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+  width: 100%;
+  color: #7a7a7a; margin-bottom: 6px;
+}
+#tn-diagText {
+  width: 100%;
+  height: 260px;
+  font-family: monospace;
+  font-size: 10px;
+}
+
+.tn-hint { margin-top: 14px; color: #4f4f4f; font-size: 9px; text-align: center; }
+
+/* ---------- update notice ---------- */
+.tn-update {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  margin: 10px 0 4px 0;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #3a3a3a;
+  border-radius: 4px;
+  color: #d8d8d8;
+}
+.tn-update.tn-hidden { display: none; }
+.tn-update-actions { display: flex; flex-direction: row; margin-top: 8px; }
+.tn-update-actions .tn-btn { margin-left: 0; margin-right: 6px; }
+.tn-btn-solid { background-color: #e8e8e8; color: #111111; border-color: #e8e8e8; }
+.tn-btn-solid:hover { background-color: #ffffff; color: #000000; border-color: #ffffff; }
+
+/* ---------- MIDI ---------- */
+.tn-btn.tn-midi-live { border-color: #8a8a8a; color: #e8e8e8; }
+.tn-midi { display: flex; flex-direction: column; padding-top: 8px; }
+.tn-midi.tn-hidden { display: none; }
+.tn-midi-top { display: flex; flex-direction: row; align-items: center; padding: 6px 0; }
+.tn-midi-status { color: #8a8a8a; }
+.tn-midi-status.tn-midi-ok { color: #e8e8e8; }
+.tn-midi-help { color: #5e5e5e; font-size: 10px; margin: 2px 0 6px 0; }
+.tn-map-row {
+  display: flex; flex-direction: column;
+  padding: 7px 0;
+  border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #242424;
+}
+.tn-map-head { display: flex; flex-direction: row; align-items: center; justify-content: space-between; }
+.tn-map-name { color: #cfcfcf; flex: 1; }
+.tn-map-right { display: flex; flex-direction: row; align-items: center; }
+.tn-map-binds { display: flex; flex-direction: row; align-items: center; margin-top: 4px; }
+.tn-map-none { color: #4a4a4a; font-size: 10px; }
+.tn-map-hint { color: #e8e8e8; font-size: 10px; }
+.tn-map-chip {
+  font-family: monospace; font-size: 10px; color: #bdbdbd;
+  border-width: 1px; border-style: solid; border-color: #3a3a3a; border-radius: 3px;
+  padding: 1px 5px; margin-right: 5px;
+}
+.tn-map-chip.tn-map-flash { color: #111111; background-color: #e8e8e8; border-color: #e8e8e8; }
+.tn-map-mode {
+  font-family: monospace; font-size: 9px; color: #7a7a7a;
+  border-width: 1px; border-style: solid; border-color: #2c2c2c; border-radius: 3px;
+  padding: 1px 4px; margin-right: 8px; letter-spacing: 0.6px;
+}
+.tn-map-mode:hover { color: #e8e8e8; border-color: #5a5a5a; }
+.tn-midi-foot { display: flex; flex-direction: row; justify-content: flex-end; padding: 12px 0; }
+
+/* hidden always wins over a block's own display rule */
+.tn-hidden, .tn-diag.tn-hidden, .tn-midi.tn-hidden, .tn-update.tn-hidden { display: none; }
+.tn-btn.tn-active.tn-midi-live { color: #111111; }

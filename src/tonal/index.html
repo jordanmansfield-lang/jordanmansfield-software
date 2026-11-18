@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="tn-top">
+    <div class="tn-status">
+      <div class="tn-dot" id="tn-statusDot"></div>
+      <span id="tn-statusText">Looking for a clip…</span>
+    </div>
+    <div class="tn-actions">
+      <div class="tn-btn tn-off" id="tn-undo" title="Undo the last adjustment (Cmd/Ctrl+Z while this panel is focused)">Undo</div>
+      <div class="tn-btn" id="tn-live" title="Live: the picture updates while you drag. Off: one change when you let go, so Premiere's own undo works normally.">Live</div>
+      <div class="tn-btn" id="tn-resetAll" title="Reset every slider">Reset</div>
+      <div class="tn-btn" id="tn-toggleMidi" title="Set up a MIDI controller">MIDI</div>
+      <div class="tn-btn" id="tn-toggleDiag" title="Diagnostics">i</div>
+    </div>
+  </div>
+
+  <div class="tn-update tn-hidden" id="tn-update">
+    <span id="tn-updateText">A new version of Tonal is available</span>
+    <div class="tn-update-actions">
+      <div class="tn-btn tn-btn-solid" id="tn-updateGet">Download</div>
+      <div class="tn-btn" id="tn-updateDismiss" title="Hide until the next version">Later</div>
+    </div>
+  </div>
+
+  <div id="tn-controls"></div>
+
+  <div class="tn-midi tn-hidden" id="tn-midi">
+    <div class="tn-midi-top">
+      <span class="tn-midi-status" id="tn-midi-status">Connecting to Tonal Bridge…</span>
+    </div>
+    <div class="tn-midi-help">Click Learn, then move a knob, fader or button on your controller. A button on a slider resets it. Click ABS to change how a knob behaves.</div>
+    <div id="tn-midi-body"></div>
+    <div class="tn-midi-foot"><div class="tn-btn" id="tn-midi-clearAll">Clear all assignments</div></div>
+  </div>
+
+  <div class="tn-diag tn-hidden" id="tn-diag">
+    <div class="tn-diag-head">
+      <span>Lumetri parameters (first selected clip)</span>
+      <div class="tn-btn" id="tn-diagRefresh">Refresh</div>
+    </div>
+    <textarea id="tn-diagText" readonly></textarea>
+  </div>
+
+  <div class="tn-hint">Drag · Shift-drag for fine · Double-click to reset · Click a number to type</div>
+
+  <script src="main.js"></script>
+  <script src="midi.js"></script>
+</body>
+</html>
