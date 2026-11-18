@@ -30,8 +30,8 @@ TONAL_FILE = f"downloads/tonal/Tonal-{TONAL['version']}.ccx"
 # Same routine as Tonal: drop Dolly-<version>.ccx into public/downloads/dolly/,
 # update these lines, run `python3 build.py`, commit and push.
 DOLLY = {
-    "version": "1.0.0",
-    "summary": "",  # one short line shown in the panel's update notice
+    "version": "1.0.1",
+    "summary": "Fixes slowed-down and sped-up clips",  # one short line shown in the panel's update notice
     "min_premiere": "25.6",
 }
 DOLLY_FILE = f"downloads/dolly/Dolly-{DOLLY['version']}.ccx"
