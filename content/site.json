@@ -37,62 +37,6 @@
   },
   "projects": [
     {
-      "slug": "framesync",
-      "show": true,
-      "name": "FrameSync",
-      "display": "Frame*Sync*",
-      "kind": "macOS app",
-      "short": "Verified SSD-to-archive sync for finished projects",
-      "tag": "macOS",
-      "lede": "A verified copy of every finished project, from working drive to archive.",
-      "meta": [
-        {
-          "label": "Platform",
-          "value": "macOS"
-        },
-        {
-          "label": "Stack",
-          "value": "Tauri 2 · React · TypeScript · Rust · SQLite"
-        },
-        {
-          "label": "Status",
-          "value": "Drive Sync in daily use"
-        }
-      ],
-      "image": {
-        "src": "",
-        "alt": ""
-      },
-      "about_title": "What it does",
-      "body": [
-        "FrameSync copies finished wedding projects from working SSDs to archive hard drives and checks every file arrived intact, replacing hours of copying and comparing by hand.",
-        "The working drive is the source of truth. The archive should be an exact, verified copy, and FrameSync never moves or deletes files that only exist on the archive."
-      ],
-      "sections": [
-        {
-          "title": "Roadmap",
-          "rows": [
-            {
-              "name": "Drive Sync",
-              "text": "Copy finished projects from working SSDs to archive HDDs, then verify every file.",
-              "status": "Built"
-            },
-            {
-              "name": "Cloud backup",
-              "text": "Automatic, versioned backup of active editing projects to Cloudflare R2.",
-              "status": "Next"
-            },
-            {
-              "name": "Background",
-              "text": "Quiet monitoring that launches at login.",
-              "status": "Planned"
-            }
-          ]
-        }
-      ],
-      "links": []
-    },
-    {
       "slug": "picturedesk",
       "show": true,
       "name": "PictureDesk",
@@ -370,6 +314,62 @@
           "download": true
         }
       ]
+    },
+    {
+      "slug": "framesync",
+      "show": true,
+      "name": "FrameSync",
+      "display": "Frame*Sync*",
+      "kind": "macOS app",
+      "short": "Verified SSD-to-archive sync for finished projects",
+      "tag": "macOS",
+      "lede": "A verified copy of every finished project, from working drive to archive.",
+      "meta": [
+        {
+          "label": "Platform",
+          "value": "macOS"
+        },
+        {
+          "label": "Stack",
+          "value": "Tauri 2 · React · TypeScript · Rust · SQLite"
+        },
+        {
+          "label": "Status",
+          "value": "Drive Sync in daily use"
+        }
+      ],
+      "image": {
+        "src": "",
+        "alt": ""
+      },
+      "about_title": "What it does",
+      "body": [
+        "FrameSync copies finished wedding projects from working SSDs to archive hard drives and checks every file arrived intact, replacing hours of copying and comparing by hand.",
+        "The working drive is the source of truth. The archive should be an exact, verified copy, and FrameSync never moves or deletes files that only exist on the archive."
+      ],
+      "sections": [
+        {
+          "title": "Roadmap",
+          "rows": [
+            {
+              "name": "Drive Sync",
+              "text": "Copy finished projects from working SSDs to archive HDDs, then verify every file.",
+              "status": "Built"
+            },
+            {
+              "name": "Cloud backup",
+              "text": "Automatic, versioned backup of active editing projects to Cloudflare R2.",
+              "status": "Next"
+            },
+            {
+              "name": "Background",
+              "text": "Quiet monitoring that launches at login.",
+              "status": "Planned"
+            }
+          ]
+        }
+      ],
+      "links": []
     }
   ],
   "footer": {
