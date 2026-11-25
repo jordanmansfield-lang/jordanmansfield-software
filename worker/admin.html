@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — jordanmansfield.dev</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper: #f7f5f0; --card: #fdfcfa; --ink: #151412; --muted: #625e57; --faint: #8f8a81;
+    --line: rgba(21, 20, 18, 0.12); --line-strong: rgba(21, 20, 18, 0.28);
+    --leak: #e9772f; --bad: #a3321b; --good: #2f6b3f;
+    --sans: "Inter", system-ui, sans-serif; --mono: "DM Mono", ui-monospace, monospace; --serif: "Instrument Serif", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .muted { color: var(--muted); }
+
+  /* buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 16px; border: 1px solid var(--line-strong); background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; }
+  .btn:hover { border-color: var(--ink); }
+  .btn--primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .btn--primary:hover { background: #000; }
+  .btn--primary:disabled { background: transparent; color: var(--faint); border-color: var(--line); cursor: default; }
+  .btn--small { min-height: 32px; padding: 0 10px; font-size: 13px; }
+  .btn--danger { color: var(--bad); }
+  .btn--danger:hover { border-color: var(--bad); }
+  .icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: transparent; cursor: pointer; color: var(--muted); font-size: 15px; }
+  .icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+  .icon-btn:disabled { opacity: 0.3; cursor: default; border-color: transparent; }
+
+  /* login + messages */
+  .centre { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .panel { width: 100%; max-width: 420px; }
+  .panel h1 { font: 400 56px/1 var(--serif); margin: 0 0 8px; letter-spacing: -0.02em; }
+  .panel h1 em { font-style: italic; }
+  .panel p { margin: 0 0 20px; color: var(--muted); }
+  .panel form { display: flex; gap: 8px; }
+  .panel input { flex: 1; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-strong); background: var(--card); }
+  .panel ol { padding-left: 20px; color: var(--muted); }
+  .panel li { margin-bottom: 8px; }
+  .panel code { font-family: var(--mono); font-size: 13px; color: var(--ink); }
+  .error { color: var(--bad); margin-top: 12px; min-height: 1.5em; }
+
+  /* layout */
+  .top { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; padding: 14px 24px; background: rgba(247, 245, 240, 0.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .brand { display: flex; align-items: baseline; gap: 12px; }
+  .brand b { font: 400 22px/1 var(--serif); }
+  .top__right { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .status { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .status a { color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
+  .dot--dirty { background: var(--leak); }
+  .dot--busy { background: var(--leak); animation: pulse 1s ease-in-out infinite; }
+  .dot--good { background: var(--good); }
+  .dot--bad { background: var(--bad); }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+
+  .layout { display: flex; flex-wrap: wrap; align-items: flex-start; max-width: 1240px; margin: 0 auto; padding: 24px; gap: 32px; }
+  .nav { flex: 0 1 240px; position: sticky; top: 92px; display: flex; flex-direction: column; gap: 2px; }
+  .nav__label { margin: 20px 0 6px; color: var(--faint); }
+  .nav__label:first-child { margin-top: 0; }
+  .nav button { text-align: left; padding: 9px 12px; border: 0; background: transparent; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .nav button:hover { background: rgba(21, 20, 18, 0.05); }
+  .nav button[aria-current="true"] { background: var(--ink); color: var(--paper); }
+  .nav button[aria-current="true"] .tag { color: var(--paper); border-color: rgba(247, 245, 240, 0.4); }
+  .nav .add { color: var(--muted); }
+  .tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line-strong); padding: 1px 5px; }
+  .editor { flex: 999 1 560px; min-width: 0; max-width: 820px; padding-bottom: 120px; }
+
+  .page-head { display: flex; flex-wrap: wrap; gap: 12px 16px; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+  .page-head h1 { font: 400 52px/1 var(--serif); margin: 0; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+  .page-head h1 em { font-style: italic; }
+  .page-head__actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  .group { border-top: 1px solid var(--line-strong); padding: 20px 0 28px; }
+  .group > h2 { font: 400 26px/1.1 var(--serif); margin: 0 0 4px; }
+  .group > .hint { margin: 0 0 16px; }
+  .hint { font-size: 13px; color: var(--muted); }
+  .field { display: block; margin-top: 16px; }
+  .field > span { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .field > .hint { display: block; margin-top: 6px; }
+  input[type="text"], input[type="url"], textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong); background: var(--card); border-radius: 0; }
+  input[type="text"]:focus, textarea:focus { border-color: var(--ink); outline: none; }
+  textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
+  .switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; font-size: 14px; }
+  .switch input { width: 18px; height: 18px; accent-color: var(--ink); margin: 0; }
+
+  .list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .item { display: flex; gap: 8px; align-items: flex-start; }
+  .item__body { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .item__body > * { flex: 1 1 200px; }
+  .item__body > .wide { flex-basis: 100%; }
+  .item__tools { display: flex; flex-direction: column; gap: 0; }
+  .card { border: 1px solid var(--line); background: var(--card); padding: 14px; }
+  .card .item__body > label > span { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .section-card { border: 1px solid var(--line-strong); padding: 16px; margin-top: 12px; }
+  .section-card__head { display: flex; gap: 8px; align-items: flex-end; }
+  .section-card__head .field { flex: 1; margin-top: 0; }
+
+  .image-box { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; margin-top: 12px; }
+  .image-box__preview { flex: 1 1 320px; aspect-ratio: 16 / 10; background: #efece5; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .image-box__preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .image-box__side { flex: 1 1 240px; display: flex; flex-direction: column; gap: 10px; }
+  .image-box__side .field { margin-top: 0; }
+  .file-btn { position: relative; overflow: hidden; }
+  .file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 12px 18px; max-width: calc(100% - 32px); z-index: 20; }
+  .toast--bad { background: var(--bad); }
+
+  @media (max-width: 800px) {
+    .top { padding: 12px 16px; }
+    .layout { padding: 16px; gap: 20px; }
+    .nav { position: static; flex-basis: 100%; flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+    .nav__label { display: none; }
+    .nav button { flex: none; border: 1px solid var(--line); }
+    .page-head h1 { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"><div class="centre"><p class="muted">Loading…</p></div></div>
+<script>
+"use strict";
+const app = document.getElementById("app");
+const S = {
+  content: null, saved: "", fileSha: "", commit: "", updated: "", repo: "",
+  view: "home", pending: new Map(), previews: new Map(),
+  status: { kind: "idle", text: "" }, publishing: false, pollTimer: 0,
+};
+
+// ------------------------------------------------------------ helpers
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else if (k === "value") n.value = v;
+    else if (k === "checked") n.checked = !!v;
+    else n.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) n.append(kid.nodeType ? kid : String(kid));
+  return n;
+}
+async function call(path, opts = {}) {
+  const res = await fetch("/api/" + path, {
+    method: opts.method || "GET",
+    headers: { "content-type": "application/json", "x-admin": "1" },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    credentials: "same-origin",
+  });
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  return { ok: res.ok, status: res.status, data };
+}
+function clean(...kids) { return kids.flat().filter((k) => k != null && k !== false); }
+function toast(text, bad) {
+  const t = el("div", { class: "toast" + (bad ? " toast--bad" : ""), role: "status" }, text);
+  document.body.append(t);
+  setTimeout(() => t.remove(), bad ? 7000 : 3500);
+}
+function isDirty() { return S.content && (JSON.stringify(S.content) !== S.saved || S.pending.size > 0); }
+function when(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+function autoGrow(t) { t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight + 2, 600) + "px"; }
+function changed() { if (S.status.kind === "bad" || S.status.kind === "good") S.status = { kind: "idle" }; renderTop(); }
+
+// ------------------------------------------------------------ boot
+async function boot() {
+  const r = await call("content");
+  if (r.status === 503 && r.data.error === "setup") return showSetup(r.data.missing || []);
+  if (r.status === 401) return showLogin();
+  if (!r.ok) return showProblem(r.data.message || "Couldn't load the site content.");
+  load(r.data);
+  renderAll();
+}
+function load(d) {
+  S.content = d.content; S.saved = JSON.stringify(d.content); S.fileSha = d.fileSha;
+  S.commit = d.commit; S.updated = d.updated; S.repo = d.repo; S.pending.clear();
+}
+
+function showSetup(missing) {
+  app.replaceChildren(el("div", { class: "centre" }, el("div", { class: "panel" },
+    el("h1", {}, "Almost ", el("em", {}, "there")),
+    el("p", {}, "The admin needs two secrets adding to the Worker in Cloudflare before it can work."),
+    el("ol", {},
+      el("li", {}, "Cloudflare → Workers & Pages → ", el("code", {}, "jordanmansfield-software"), " → Settings → Variables and Secrets."),
+      el("li", {}, "Add these as type ", el("b", {}, "Secret"), ": ", missing.map((m, i) => [i ? " and " : "", el("code", {}, m)])),
+      el("li", {}, "Deploy, then reload this page.")),
+  )));
+}
+function showProblem(msg) {
+  app.replaceChildren(el("div", { class: "centre" }, el("div", { class: "panel" },
+    el("h1", {}, "Hmm."), el("p", {}, msg),
+    el("button", { class: "btn", onclick: () => location.reload() }, "Try again"))));
+}
+function showLogin() {
+  const err = el("p", { class: "error", role: "alert" });
+  const pw = el("input", { type: "password", autocomplete: "current-password", "aria-label": "Password", placeholder: "Password", required: true });
+  const go = el("button", { class: "btn btn--primary", type: "submit" }, "Sign in");
+  const form = el("form", { onsubmit: async (e) => {
+    e.preventDefault(); go.disabled = true; err.textContent = "";
+    const r = await call("login", { method: "POST", body: { password: pw.value } });
+    go.disabled = false;
+    if (r.ok) return boot();
+    err.textContent = r.status === 401 ? "That password didn't work." : (r.data.message || "Couldn't sign in.");
+    pw.select();
+  } }, pw, go);
+  app.replaceChildren(el("div", { class: "centre" }, el("div", { class: "panel" },
+    el("h1", {}, "Site ", el("em", {}, "admin")),
+    el("p", {}, "Edit the words, links and pictures on jordanmansfield.dev."),
+    form, err)));
+  pw.focus();
+}
+
+// ------------------------------------------------------------ chrome
+let topEl, navEl, editorEl;
+function renderAll() {
+  topEl = el("header", { class: "top" });
+  navEl = el("nav", { class: "nav", "aria-label": "Sections" });
+  editorEl = el("main", { class: "editor" });
+  app.replaceChildren(topEl, el("div", { class: "layout" }, navEl, editorEl));
+  renderTop(); renderNav(); renderEditor();
+}
+function renderTop() {
+  if (!topEl) return;
+  const dirty = isDirty();
+  let dot = "dot", text;
+  if (S.status.kind === "busy") { dot += " dot--busy"; text = S.status.text; }
+  else if (S.status.kind === "bad") { dot += " dot--bad"; text = S.status.text; }
+  else if (dirty) { dot += " dot--dirty"; text = "Unsaved changes"; }
+  else if (S.status.kind === "good") { dot += " dot--good"; text = S.status.text; }
+  else { text = S.updated ? "Up to date · last change " + when(S.updated) : "Up to date"; }
+  const status = el("span", { class: "status", role: "status" }, el("span", { class: dot }), text,
+    S.status.link ? el("a", { href: S.status.link, target: "_blank", rel: "noopener" }, "details") : null);
+  topEl.replaceChildren(
+    el("div", { class: "brand" }, el("b", {}, "jordanmansfield.dev"), el("span", { class: "mono muted" }, "Admin")),
+    el("div", { class: "top__right" }, status,
+      el("a", { class: "btn btn--small", href: "/", target: "_blank", rel: "noopener" }, "View site ↗"),
+      el("button", { class: "btn btn--small", onclick: signOut }, "Sign out"),
+      el("button", { class: "btn btn--primary", disabled: !dirty || S.publishing, onclick: publish }, S.publishing ? "Publishing…" : "Save & publish")));
+}
+function renderNav() {
+  const item = (key, label, extra) => el("button", { "aria-current": S.view === key ? "true" : "false", onclick: () => go(key) }, el("span", {}, label), extra || null);
+  const projects = S.content.projects.map((p, i) =>
+    item("p" + i, p.name || "Untitled", p.show === false ? el("span", { class: "tag" }, "Hidden") : null));
+  navEl.replaceChildren(
+    el("div", { class: "nav__label mono" }, "Pages"),
+    item("home", "Home page"),
+    item("other", "Footer & 404"),
+    el("div", { class: "nav__label mono" }, "Projects"),
+    ...projects,
+    el("button", { class: "add", onclick: addProject }, "+ Add project"));
+}
+function go(view) { S.view = view; renderNav(); renderEditor(); window.scrollTo(0, 0); }
+
+// ------------------------------------------------------------ fields
+function text(label, obj, key, o = {}) {
+  const multi = o.multiline || (obj[key] || "").length > 70 || String(obj[key] || "").includes("\n");
+  const input = multi
+    ? el("textarea", { rows: o.rows || 2, value: obj[key] || "", placeholder: o.placeholder })
+    : el("input", { type: "text", value: obj[key] || "", placeholder: o.placeholder, spellcheck: o.code ? "false" : null });
+  input.addEventListener("input", () => {
+    if (o.clean) {
+      const tidy = o.clean(input.value);
+      if (tidy !== input.value) input.value = tidy;
+      obj[key] = tidy;
+    } else obj[key] = input.value;
+    if (multi) autoGrow(input);
+    if (o.onchange) o.onchange();
+    changed();
+  });
+  if (multi) requestAnimationFrame(() => autoGrow(input));
+  return el("label", { class: "field" + (o.wide ? " wide" : "") }, el("span", {}, label), input, o.hint ? el("span", { class: "hint" }, o.hint) : null);
+}
+function toggle(label, obj, key, onchange) {
+  const box = el("input", { type: "checkbox", checked: obj[key] !== false });
+  box.addEventListener("change", () => { obj[key] = box.checked; if (onchange) onchange(); changed(); });
+  return el("label", { class: "switch" }, box, label);
+}
+function tools(arr, i, rerender, what) {
+  const move = (d) => { const [x] = arr.splice(i, 1); arr.splice(i + d, 0, x); rerender(); changed(); };
+  return el("div", { class: "item__tools" },
+    el("button", { class: "icon-btn", title: "Move up", "aria-label": `Move ${what} up`, disabled: i === 0, onclick: () => move(-1) }, "↑"),
+    el("button", { class: "icon-btn", title: "Move down", "aria-label": `Move ${what} down`, disabled: i === arr.length - 1, onclick: () => move(1) }, "↓"),
+    el("button", { class: "icon-btn", title: "Remove", "aria-label": `Remove ${what}`, onclick: () => { arr.splice(i, 1); rerender(); changed(); } }, "×"));
+}
+function paragraphs(label, arr, hint) {
+  const wrap = el("div", { class: "field" });
+  const draw = () => {
+    wrap.replaceChildren(...clean(el("span", {}, label), hint ? el("span", { class: "hint" }, hint) : null,
+      el("div", { class: "list" }, arr.map((t, i) => {
+        const ta = el("textarea", { rows: 3, value: t, "aria-label": `${label} ${i + 1}` });
+        ta.addEventListener("input", () => { arr[i] = ta.value; autoGrow(ta); changed(); });
+        requestAnimationFrame(() => autoGrow(ta));
+        return el("div", { class: "item" }, el("div", { class: "item__body" }, ta), tools(arr, i, draw, "paragraph"));
+      })),
+      el("div", { style: "margin-top:8px" }, el("button", { class: "btn btn--small", onclick: () => { arr.push(""); draw(); changed(); } }, "+ Add paragraph"))));
+  };
+  draw();
+  return wrap;
+}
+function rows(label, arr, fields, blank, what, hint) {
+  const wrap = el("div", { class: "field" });
+  const draw = () => {
+    wrap.replaceChildren(...clean(el("span", {}, label), hint ? el("span", { class: "hint" }, hint) : null,
+      el("div", { class: "list" }, arr.map((obj, i) => el("div", { class: "item card" },
+        el("div", { class: "item__body" }, fields.map((f) => {
+          if (f.type === "toggle") return el("div", { class: "wide" }, toggle(f.label, obj, f.key));
+          const input = f.long ? el("textarea", { rows: 2, value: obj[f.key] || "" }) : el("input", { type: "text", value: obj[f.key] || "" });
+          input.addEventListener("input", () => { obj[f.key] = input.value; if (f.long) autoGrow(input); changed(); });
+          if (f.long) requestAnimationFrame(() => autoGrow(input));
+          return el("label", { class: f.wide ? "wide" : "" }, el("span", {}, f.label), input);
+        })),
+        tools(arr, i, draw, what)))),
+      el("div", { style: "margin-top:8px" }, el("button", { class: "btn btn--small", onclick: () => { arr.push(blank()); draw(); changed(); } }, `+ Add ${what}`))));
+  };
+  draw();
+  return wrap;
+}
+function group(title, hint, ...kids) {
+  return el("section", { class: "group" }, el("h2", {}, title), hint ? el("p", { class: "hint" }, hint) : null, ...kids);
+}
+const ITALIC_HINT = "Put *asterisks* around words to make them italic. Press return for a new line.";
+const TOKEN_HINT = "You can type {tonal.version}, {tonal.min_premiere}, {tonal.file}, {bridge.version}, {bridge.file}, {dolly.version}, {dolly.min_premiere} or {dolly.file} and the current release fills itself in.";
+
+// ------------------------------------------------------------ pages
+function renderEditor() {
+  if (S.view === "home") return editorEl.replaceChildren(homePage());
+  if (S.view === "other") return editorEl.replaceChildren(otherPage());
+  const i = Number(S.view.slice(1));
+  if (!S.content.projects[i]) return go("home");
+  editorEl.replaceChildren(projectPage(S.content.projects[i], i));
+}
+function heading(title, ...actions) {
+  const h = el("h1", {});
+  const parts = String(title).split(/\*(.+?)\*/);
+  parts.forEach((part, k) => h.append(k % 2 ? el("em", {}, part) : part.replace(/\n/g, " ")));
+  return el("div", { class: "page-head" }, h, el("div", { class: "page-head__actions" }, ...actions));
+}
+function homePage() {
+  const h = S.content.home;
+  return el("div", {},
+    heading("Home *page*", el("a", { class: "btn btn--small", href: "/", target: "_blank", rel: "noopener" }, "Open page ↗")),
+    group("Top of the page", null,
+      text("Small line above your name", h, "eyebrow"),
+      text("Big name", h, "display", { multiline: true, hint: ITALIC_HINT }),
+      text("Introduction", h, "intro", { multiline: true })),
+    group("Work list", "The projects listed here come from the Projects section on the left, in the same order.",
+      text("Heading", h, "work_title")),
+    group("About", null,
+      text("Heading", h, "about_title"),
+      text("Opening line (large)", h, "about_pull", { multiline: true }),
+      paragraphs("Paragraphs", h.about)),
+    group("Contact", null,
+      text("Small heading", h, "contact_eyebrow"),
+      text("Big link text", h, "contact_big_label"),
+      text("Big link goes to", h, "contact_big_url", { hint: "For email, type mailto: then your address, e.g. mailto:hello@jordanmansfield.dev", code: true }),
+      rows("Links", h.contact_links, [{ key: "label", label: "Text" }, { key: "url", label: "Goes to" }], () => ({ label: "", url: "" }), "link",
+        "Add ↗ to the text if you want the arrow.")),
+    group("Search engines and browser tab", null,
+      text("Page title", h, "title"),
+      text("Description", h, "description", { multiline: true })));
+}
+function otherPage() {
+  const f = S.content.footer, n = S.content.not_found;
+  return el("div", {},
+    heading("Footer *& 404*"),
+    group("Footer", "Shown at the bottom of every page.", text("Left", f, "left"), text("Right", f, "right")),
+    group("Page not found", "Shown when someone follows a broken link.",
+      text("Small line", n, "eyebrow"),
+      text("Big words", n, "display", { multiline: true, hint: ITALIC_HINT }),
+      text("Link back to the home page", n, "link_label")));
+}
+function slugify(s) { return String(s).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "project"; }
+function projectPage(p, i) {
+  const list = S.content.projects;
+  p.meta = p.meta || []; p.body = p.body || []; p.sections = p.sections || []; p.links = p.links || []; p.image = p.image || { src: "", alt: "" };
+  const move = (d) => { const [x] = list.splice(i, 1); list.splice(i + d, 0, x); S.view = "p" + (i + d); renderNav(); renderEditor(); changed(); };
+  const remove = () => {
+    if (!confirm(`Delete ${p.name || "this project"}? Its page will come off the site when you publish.`)) return;
+    list.splice(i, 1); go("home"); changed();
+  };
+  const slugHint = el("span", { class: "hint" });
+  const showSlug = () => { slugHint.textContent = `jordanmansfield.dev/${p.slug || "…"}`; };
+  showSlug();
+  const slugField = text("Web address", p, "slug", { clean: (v) => v.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/-{2,}/g, "-").replace(/^-+/, ""), onchange: showSlug, code: true });
+  slugField.append(slugHint);
+
+  const sectionsWrap = el("div", {});
+  const drawSections = () => {
+    sectionsWrap.replaceChildren(
+      ...p.sections.map((s, k) => el("div", { class: "section-card" },
+        el("div", { class: "section-card__head" }, text("Section heading", s, "title"), tools(p.sections, k, drawSections, "section")),
+        rows("Rows", s.rows, [{ key: "name", label: "Name" }, { key: "status", label: "Status (optional)" }, { key: "text", label: "Text", long: true, wide: true }],
+          () => ({ name: "", text: "", status: "" }), "row"))),
+      el("div", { style: "margin-top:12px" }, el("button", { class: "btn btn--small", onclick: () => { p.sections.push({ title: "Roadmap", rows: [] }); drawSections(); changed(); } }, "+ Add section")));
+  };
+  drawSections();
+
+  return el("div", {},
+    heading(p.display || p.name || "Untitled",
+      el("button", { class: "icon-btn", title: "Move up the list", "aria-label": "Move project up", disabled: i === 0, onclick: () => move(-1) }, "↑"),
+      el("button", { class: "icon-btn", title: "Move down the list", "aria-label": "Move project down", disabled: i === list.length - 1, onclick: () => move(1) }, "↓"),
+      p.show !== false ? el("a", { class: "btn btn--small", href: "/" + p.slug, target: "_blank", rel: "noopener" }, "Open page ↗") : null,
+      el("button", { class: "btn btn--small btn--danger", onclick: remove }, "Delete")),
+    el("div", { style: "margin:-12px 0 20px" }, toggle("Show this project on the site", p, "show", renderNav)),
+    group("Name and summary", null,
+      text("Name", p, "name", { onchange: renderNav }),
+      text("Big name on its page", p, "display", { hint: "Put *asterisks* around the part you want in italics, e.g. Frame*Sync*." }),
+      slugField,
+      text("One line for the home page list", p, "short"),
+      text("Label on the home page list", p, "tag", { hint: "Short, e.g. macOS, Web, Premiere." }),
+      text("Small line above the big name", p, "kind", { hint: "e.g. macOS app, Premiere Pro plugin." }),
+      text("Opening sentence", p, "lede", { multiline: true })),
+    group("Facts", "The small labelled details under the opening sentence.",
+      rows("", p.meta, [{ key: "label", label: "Label" }, { key: "value", label: "Value" }], () => ({ label: "", value: "" }), "fact", TOKEN_HINT)),
+    group("Buttons", "Links shown under the facts. Download buttons get ↓ and other links get ↗.",
+      rows("", p.links, [{ key: "label", label: "Text" }, { key: "url", label: "Goes to" }, { key: "download", label: "This downloads a file", type: "toggle" }],
+        () => ({ label: "", url: "", download: false }), "button")),
+    group("Screenshot", null, imageEditor(p)),
+    group("Description", null,
+      text("Heading", p, "about_title"),
+      paragraphs("Paragraphs", p.body)),
+    group("Sections", "Numbered lists such as Install steps or a Roadmap.", sectionsWrap));
+}
+
+// ------------------------------------------------------------ images
+function imageEditor(p) {
+  const box = el("div", {});
+  const draw = () => {
+    const src = p.image.src;
+    const url = S.previews.get(src) || (src ? "/" + src : "");
+    const preview = el("div", { class: "image-box__preview" }, url ? el("img", { src: url, alt: "" }) : el("span", { class: "mono muted" }, "No screenshot"));
+    const input = el("input", { type: "file", accept: "image/*", "aria-label": "Choose a screenshot" });
+    input.addEventListener("change", async () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      try {
+        const out = await prepareImage(file);
+        const path = `assets/uploads/${slugify(p.slug || p.name)}-${Date.now().toString(36)}.jpg`;
+        // Replacing an image that hasn't been published yet: drop the old one.
+        if (S.pending.has("public/" + p.image.src)) S.pending.delete("public/" + p.image.src);
+        S.pending.set("public/" + path, out.base64);
+        S.previews.set(path, out.url);
+        p.image.src = path;
+        draw(); changed();
+      } catch (e) { toast("Couldn't read that image. Try a JPEG or PNG.", true); }
+    });
+    box.replaceChildren(el("div", { class: "image-box" }, preview,
+      el("div", { class: "image-box__side" },
+        el("span", { class: "btn btn--small file-btn" }, src ? "Replace image" : "Choose image", input),
+        src ? el("button", { class: "btn btn--small", onclick: () => { S.pending.delete("public/" + p.image.src); p.image.src = ""; draw(); changed(); } }, "Remove image") : null,
+        text("Description for screen readers", p.image, "alt", { multiline: true, hint: "Say what the screenshot shows, in a sentence." }),
+        el("span", { class: "hint" }, "Large images are resized to 2400 pixels wide automatically."))));
+  };
+  draw();
+  return box;
+}
+async function prepareImage(file) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 2400 / bitmap.width);
+  const w = Math.round(bitmap.width * scale), h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#efece5"; ctx.fillRect(0, 0, w, h);
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  const blob = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.86));
+  const dataUrl = await new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+  return { base64: String(dataUrl).split(",")[1], url: URL.createObjectURL(blob) };
+}
+
+// ------------------------------------------------------------ actions
+function addProject() {
+  let n = 1, slug = "new-project";
+  while (S.content.projects.some((p) => p.slug === slug)) slug = `new-project-${++n}`;
+  S.content.projects.push({
+    slug, show: false, name: "New project", display: "New *project*", kind: "", short: "", tag: "", lede: "",
+    meta: [], image: { src: "", alt: "" }, about_title: "What it does", body: [""], sections: [], links: [],
+  });
+  go("p" + (S.content.projects.length - 1));
+  changed();
+  toast("Added. It stays hidden until you switch on “Show this project on the site”.");
+}
+async function publish() {
+  if (S.publishing || !isDirty()) return;
+  for (const p of S.content.projects) p.slug = String(p.slug || "").replace(/^-+|-+$/g, "") || slugify(p.name);
+  S.publishing = true; S.status = { kind: "busy", text: "Saving to GitHub…" }; renderTop();
+  const files = [...S.pending].map(([path, data]) => ({ path, data }));
+  const r = await call("publish", { method: "POST", body: { content: S.content, fileSha: S.fileSha, files } });
+  S.publishing = false;
+  if (!r.ok) {
+    if (r.status === 401) { S.status = { kind: "idle" }; renderTop(); toast("You've been signed out. Sign in again, then press Save.", true); return; }
+    S.status = { kind: "bad", text: r.data.message || "Couldn't save." };
+    if (r.data.error === "conflict") {
+      S.status.text = "Not saved: the content changed elsewhere. Reload to get the latest, then redo your edit.";
+    }
+    renderTop(); toast(S.status.text, true);
+    return;
+  }
+  S.saved = JSON.stringify(S.content); S.fileSha = r.data.fileSha; S.commit = r.data.commit; S.updated = r.data.updated || new Date().toISOString();
+  S.pending.clear();
+  S.status = { kind: "busy", text: "Saved. Rebuilding the site…" };
+  renderTop(); renderNav(); renderEditor();
+  watchBuild(r.data.commit, Date.now());
+}
+function watchBuild(commit, started) {
+  clearTimeout(S.pollTimer);
+  S.pollTimer = setTimeout(async () => {
+    const r = await call("status?commit=" + commit);
+    const d = r.data || {};
+    if (r.ok && d.status === "completed") {
+      if (d.conclusion === "success") {
+        S.status = { kind: "busy", text: "Built. Going live…" }; renderTop();
+        setTimeout(() => { if (S.status.text === "Built. Going live…") { S.status = { kind: "good", text: "Published. Live within a minute." }; renderTop(); } }, 45000);
+      } else {
+        S.status = { kind: "bad", text: "Saved, but the rebuild failed.", link: d.url }; renderTop();
+      }
+      return;
+    }
+    if (Date.now() - started > 6 * 60000) { S.status = { kind: "good", text: "Saved. The rebuild is taking a while; it should still go live." }; renderTop(); return; }
+    watchBuild(commit, started);
+  }, 5000);
+}
+async function signOut() {
+  if (isDirty() && !confirm("You have unsaved changes. Sign out anyway?")) return;
+  await call("logout", { method: "POST" });
+  S.content = null; topEl = null; showLogin();
+}
+window.addEventListener("beforeunload", (e) => { if (isDirty()) { e.preventDefault(); e.returnValue = ""; } });
+window.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); publish(); } });
+
+boot();
+</script>
+</body>
+</html>

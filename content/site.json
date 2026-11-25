@@ -1,0 +1,384 @@
+{
+  "_readme": "Everything on jordanmansfield.dev that you can edit. Edited at /admin; build.py turns it into the pages in public/. Text can include {tonal.version}, {tonal.min_premiere}, {tonal.file}, {bridge.version}, {bridge.file}, {dolly.version}, {dolly.min_premiere} and {dolly.file}, which are filled in from the release blocks in build.py.",
+  "home": {
+    "title": "Jordan Mansfield",
+    "description": "Wedding photographer in Horsham, West Sussex, building the software his work runs on.",
+    "eyebrow": "Small software, happy accidents",
+    "display": "Jordan\n*Mansfield*",
+    "intro": "Wedding photographer in Horsham, West Sussex. Between shoots I build the software my work runs on: backup tools, editing plugins, and the back office behind it all.",
+    "work_title": "Work",
+    "about_title": "About",
+    "about_pull": "I grew up around my dad’s darkroom and started photographing weddings with him as a teenager.",
+    "about": [
+      "I studied Fashion Photography at London College of Fashion, then spent years as a sport and commercial photographer at Getty Images. I’ve photographed weddings full-time since 2021, and school portraits under MySchoolPhotograph.",
+      "[A LINE ON WHY YOU BUILD SOFTWARE, IN YOUR WORDS]"
+    ],
+    "contact_eyebrow": "Contact",
+    "contact_big_label": "Say hello",
+    "contact_big_url": "mailto:[YOUR EMAIL]",
+    "contact_links": [
+      {
+        "label": "[YOUR EMAIL]",
+        "url": "mailto:[YOUR EMAIL]"
+      },
+      {
+        "label": "GitHub ↗",
+        "url": "https://github.com/jordanmansfield-lang"
+      },
+      {
+        "label": "Weddings ↗",
+        "url": "https://jordanmansfieldweddings.com"
+      },
+      {
+        "label": "School photography ↗",
+        "url": "https://www.myschoolphotograph.co.uk"
+      }
+    ]
+  },
+  "projects": [
+    {
+      "slug": "framesync",
+      "show": true,
+      "name": "FrameSync",
+      "display": "Frame*Sync*",
+      "kind": "macOS app",
+      "short": "Verified SSD-to-archive sync for finished projects",
+      "tag": "macOS",
+      "lede": "A verified copy of every finished project, from working drive to archive.",
+      "meta": [
+        {
+          "label": "Platform",
+          "value": "macOS"
+        },
+        {
+          "label": "Stack",
+          "value": "Tauri 2 · React · TypeScript · Rust · SQLite"
+        },
+        {
+          "label": "Status",
+          "value": "Drive Sync in daily use"
+        }
+      ],
+      "image": {
+        "src": "",
+        "alt": ""
+      },
+      "about_title": "What it does",
+      "body": [
+        "FrameSync copies finished wedding projects from working SSDs to archive hard drives and checks every file arrived intact, replacing hours of copying and comparing by hand.",
+        "The working drive is the source of truth. The archive should be an exact, verified copy, and FrameSync never moves or deletes files that only exist on the archive."
+      ],
+      "sections": [
+        {
+          "title": "Roadmap",
+          "rows": [
+            {
+              "name": "Drive Sync",
+              "text": "Copy finished projects from working SSDs to archive HDDs, then verify every file.",
+              "status": "Built"
+            },
+            {
+              "name": "Cloud backup",
+              "text": "Automatic, versioned backup of active editing projects to Cloudflare R2.",
+              "status": "Next"
+            },
+            {
+              "name": "Background",
+              "text": "Quiet monitoring that launches at login.",
+              "status": "Planned"
+            }
+          ]
+        }
+      ],
+      "links": []
+    },
+    {
+      "slug": "picturedesk",
+      "show": true,
+      "name": "PictureDesk",
+      "display": "Picture*Desk*",
+      "kind": "Web platform",
+      "short": "The back office for a wedding photography business",
+      "tag": "Web",
+      "lede": "The business operating system for wedding photographers and videographers.",
+      "meta": [
+        {
+          "label": "Platform",
+          "value": "Web"
+        },
+        {
+          "label": "Stack",
+          "value": "pnpm monorepo · Railway · Clerk"
+        },
+        {
+          "label": "Status",
+          "value": "Running my own business"
+        }
+      ],
+      "image": {
+        "src": "assets/picturedesk-projects.jpg",
+        "alt": "PictureDesk’s Projects view: wedding cards with each couple’s delivery checklist and how many days each is past due"
+      },
+      "about_title": "What it does",
+      "body": [
+        "PictureDesk is the platform I always wished existed. Enquiries, projects, contacts, invoices and suppliers live in one place, built photographer-first rather than as a generic CRM.",
+        "It runs my own bookings and is the single source of truth for the business."
+      ],
+      "sections": [
+        {
+          "title": "Roadmap",
+          "rows": [
+            {
+              "name": "Contracts",
+              "text": "A template editor and contract editor, with signatures, expiry and reminders.",
+              "status": "Now"
+            },
+            {
+              "name": "Quotes",
+              "text": "Proposals that turn into bookings.",
+              "status": "Next"
+            },
+            {
+              "name": "Invoices",
+              "text": "Payments and history, all in one place.",
+              "status": "Next"
+            },
+            {
+              "name": "Questionnaires",
+              "text": "Pre-wedding details, collected without the email back-and-forth.",
+              "status": "Planned"
+            }
+          ]
+        }
+      ],
+      "links": []
+    },
+    {
+      "slug": "tenframe",
+      "show": true,
+      "name": "Tenframe",
+      "display": "Ten*frame*",
+      "kind": "Web app",
+      "short": "Ten-slide Instagram carousels from a gallery",
+      "tag": "Worker",
+      "lede": "Drop in a gallery, get a ten-slide carousel.",
+      "meta": [
+        {
+          "label": "Platform",
+          "value": "Web · desktop"
+        },
+        {
+          "label": "Stack",
+          "value": "Cloudflare Workers · R2"
+        },
+        {
+          "label": "Status",
+          "value": "Live"
+        }
+      ],
+      "image": {
+        "src": "",
+        "alt": ""
+      },
+      "about_title": "What it does",
+      "body": [
+        "Tenframe turns an upload of 40 to 100 images into a ten-slide, 1080 × 1440 Instagram carousel. An image tray on the left, a slide strip in the middle and a live Instagram preview on the right.",
+        "Each slide can take a preset layout, like bordered, landscape fit, stacked trio or staggered pair, and every carousel is saved so it can be revisited later."
+      ],
+      "sections": [
+        {
+          "title": "Roadmap",
+          "rows": [
+            {
+              "name": "Carousel builder",
+              "text": "Upload, arrange, preview and export.",
+              "status": "Built"
+            },
+            {
+              "name": "Accounts",
+              "text": "Sign in with Google and keep your own projects.",
+              "status": "Next"
+            },
+            {
+              "name": "Open to photographers",
+              "text": "Tenframe for anyone who posts their work.",
+              "status": "Planned"
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "label": "Open Tenframe",
+          "url": "https://tenframe.jordan-mansfield.workers.dev",
+          "download": false
+        }
+      ]
+    },
+    {
+      "slug": "tonal",
+      "show": true,
+      "name": "Tonal",
+      "display": "To*nal*",
+      "kind": "Premiere Pro plugin",
+      "short": "Proper sliders for Premiere’s classic Lumetri Color",
+      "tag": "Premiere",
+      "lede": "Proper sliders for Premiere Pro’s classic Lumetri Color.",
+      "meta": [
+        {
+          "label": "Works with",
+          "value": "Premiere Pro {tonal.min_premiere} or later"
+        },
+        {
+          "label": "Version",
+          "value": "{tonal.version}"
+        },
+        {
+          "label": "Tested on",
+          "value": "macOS"
+        }
+      ],
+      "image": {
+        "src": "assets/tonal-panel.jpg",
+        "alt": "The Tonal panel: sliders for temperature, tint, saturation, exposure, contrast, highlights and shadows"
+      },
+      "about_title": "What it does",
+      "body": [
+        "The latest Premiere Pro moves colour grading into a new Color tab. The classic Lumetri Color effect is still there to drag onto a clip, but its only controls are rows of raw numbers.",
+        "Tonal is a docked panel that puts sliders back on it: white balance, light, creative and vignette. It edits the Lumetri Color effect already on your clips, so Premiere’s own engine still does the grading. Select several clips and one move changes them all. Keyframes work like Effect Controls: once a setting is keyframed, a move sets a keyframe at the playhead.",
+        "Grade with real knobs, too. Plug in a MIDI controller such as a Behringer X-Touch Mini, click Learn beside a slider, and turn a knob. Buttons can undo, redo, reset and add keyframes, and the controller’s LED rings follow your grade from clip to clip."
+      ],
+      "sections": [
+        {
+          "title": "Install",
+          "rows": [
+            {
+              "name": "Download",
+              "text": "Get the .ccx file using the button above.",
+              "status": ""
+            },
+            {
+              "name": "Install",
+              "text": "Quit Premiere, then double-click the file. Creative Cloud asks you to confirm. It warns you to only install plugins from sources you trust.",
+              "status": ""
+            },
+            {
+              "name": "Open",
+              "text": "In Premiere, choose Window → UXP Plugins → Tonal, then dock the panel wherever suits you.",
+              "status": ""
+            },
+            {
+              "name": "Update",
+              "text": "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.",
+              "status": ""
+            }
+          ]
+        },
+        {
+          "title": "MIDI controllers",
+          "rows": [
+            {
+              "name": "Get the Bridge",
+              "text": "Premiere plugins can’t talk to MIDI devices, so a small menu-bar app, Tonal Bridge, does it for them. Download it using the second button above. Mac only.",
+              "status": ""
+            },
+            {
+              "name": "Open it",
+              "text": "Unzip it and drag Tonal Bridge into Applications. The first time, right-click it and choose Open. It isn’t from the App Store, so macOS asks you to confirm, or to allow it under System Settings → Privacy & Security.",
+              "status": ""
+            },
+            {
+              "name": "Map your controls",
+              "text": "In Tonal, click MIDI, then Learn beside a slider and turn a knob. Press a button instead to make it reset that slider. Tonal remembers your mappings.",
+              "status": ""
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "label": "Download Tonal {tonal.version}",
+          "url": "{tonal.file}",
+          "download": true
+        },
+        {
+          "label": "Download Tonal Bridge {bridge.version} for Mac",
+          "url": "{bridge.file}",
+          "download": true
+        }
+      ]
+    },
+    {
+      "slug": "dolly",
+      "show": true,
+      "name": "Dolly",
+      "display": "Dol*ly*",
+      "kind": "Premiere Pro plugin",
+      "short": "Slow push-ins on every clip, at one steady speed",
+      "tag": "Premiere",
+      "lede": "Slow push-ins for Premiere Pro, on every clip at once.",
+      "meta": [
+        {
+          "label": "Works with",
+          "value": "Premiere Pro {dolly.min_premiere} or later"
+        },
+        {
+          "label": "Version",
+          "value": "{dolly.version}"
+        }
+      ],
+      "image": {
+        "src": "assets/dolly-panel.jpg",
+        "alt": "The Dolly panel: In and Out, a speed slider set to 0.5% a second, and a Push in button for 24 selected clips"
+      },
+      "about_title": "What it does",
+      "body": [
+        "A subtle push-in means two Scale keyframes on every clip, set by hand hundreds of times a film. Presets help, but they reset a cropped clip’s Scale, and their keyframes drift off the clip as soon as you trim or slip it.",
+        "Dolly is a docked panel. Pick a speed, select your clips and click once. Every clip zooms from its own starting Scale at the same pace, with keyframes on its first and last frames. After an edit, Refit all puts every zoom back on its clip’s ends, keeping each clip’s speed."
+      ],
+      "sections": [
+        {
+          "title": "Install",
+          "rows": [
+            {
+              "name": "Download",
+              "text": "Get the .ccx file using the button above.",
+              "status": ""
+            },
+            {
+              "name": "Install",
+              "text": "Quit Premiere, then double-click the file. Creative Cloud asks you to confirm. It warns you to only install plugins from sources you trust.",
+              "status": ""
+            },
+            {
+              "name": "Open",
+              "text": "In Premiere, choose Window → UXP Plugins → Dolly, then dock the panel wherever suits you.",
+              "status": ""
+            },
+            {
+              "name": "Update",
+              "text": "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.",
+              "status": ""
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "label": "Download Dolly {dolly.version}",
+          "url": "{dolly.file}",
+          "download": true
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "left": "© 2026 Jordan Mansfield",
+    "right": "Horsham, West Sussex"
+  },
+  "not_found": {
+    "eyebrow": "404 — Overexposed",
+    "display": "Nothing\n*here*",
+    "link_label": "Back to the work →"
+  }
+}

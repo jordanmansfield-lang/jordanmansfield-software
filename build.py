@@ -1,8 +1,17 @@
-"""Builds the static site for jordan mansfield into ./public"""
-import os, random, html
+"""Builds jordanmansfield.dev into ./public.
+
+All the words, links and images live in content/site.json, which is what the
+/admin page edits. This file only holds the page templates and the plugin
+release numbers. A GitHub Action (.github/workflows/build-site.yml) runs it
+whenever content/site.json or this file changes, so edits made in /admin go
+live without anyone running it by hand. Running it locally is still fine:
+python3 build.py (needs Pillow).
+"""
+import os, random, html, json, re
 from PIL import Image
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
+ROOT = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(ROOT, "public")
 os.makedirs(OUT + "/assets", exist_ok=True)
 
 # ---------- grain tile ----------
@@ -18,7 +27,8 @@ img.save(OUT + "/assets/grain.png", optimize=True)
 # ---------- Tonal releases ----------
 # To ship a new version: drop Tonal-<version>.ccx into public/downloads/tonal/,
 # update these lines, run `python3 build.py`, commit and push. Every installed
-# copy of Tonal reads version.json and offers the update.
+# copy of Tonal reads version.json and offers the update. The page copy picks the
+# numbers up through {tonal.version} etc. in content/site.json.
 TONAL = {
     "version": "1.3.1",
     "summary": "Fixes connecting to Tonal Bridge",  # one short line shown in the panel's update notice, e.g. "New HSL sliders"
@@ -40,101 +50,37 @@ DOLLY = {
 }
 DOLLY_FILE = f"downloads/dolly/Dolly-{DOLLY['version']}.ccx"
 
-PROJECTS = [
-    {
-        "slug": "framesync", "name": "FrameSync", "name_html": "Frame<em>Sync</em>",
-        "kind": "macOS app", "short": "Verified SSD-to-archive sync for finished projects",
-        "tag": "macOS",
-        "lede": "A verified copy of every finished project, from working drive to archive.",
-        "meta": [("Platform", "macOS"), ("Stack", "Tauri 2 · React · TypeScript · Rust · SQLite"), ("Status", "Drive Sync in daily use")],
-        "body": [
-            "FrameSync copies finished wedding projects from working SSDs to archive hard drives and checks every file arrived intact, replacing hours of copying and comparing by hand.",
-            "The working drive is the source of truth. The archive should be an exact, verified copy, and FrameSync never moves or deletes files that only exist on the archive.",
-        ],
-        "road": [("Drive Sync", "Copy finished projects from working SSDs to archive HDDs, then verify every file.", "Built"),
-                 ("Cloud backup", "Automatic, versioned backup of active editing projects to Cloudflare R2.", "Next"),
-                 ("Background", "Quiet monitoring that launches at login.", "Planned")],
-        "link": None,
-    },
-    {
-        "slug": "picturedesk", "name": "PictureDesk", "name_html": "Picture<em>Desk</em>",
-        "kind": "Web platform", "short": "The back office for a wedding photography business",
-        "tag": "Web",
-        "lede": "The business operating system for wedding photographers and videographers.",
-        "meta": [("Platform", "Web"), ("Stack", "pnpm monorepo · Railway · Clerk"), ("Status", "Running my own business")],
-        "shot": ("assets/picturedesk-projects.jpg", "PictureDesk’s Projects view: wedding cards with each couple’s delivery checklist and how many days each is past due"),
-        "body": [
-            "PictureDesk is the platform I always wished existed. Enquiries, projects, contacts, invoices and suppliers live in one place, built photographer-first rather than as a generic CRM.",
-            "It runs my own bookings and is the single source of truth for the business.",
-        ],
-        "road": [("Contracts", "A template editor and contract editor, with signatures, expiry and reminders.", "Now"),
-                 ("Quotes", "Proposals that turn into bookings.", "Next"),
-                 ("Invoices", "Payments and history, all in one place.", "Next"),
-                 ("Questionnaires", "Pre-wedding details, collected without the email back-and-forth.", "Planned")],
-        "link": None,
-    },
-    {
-        "slug": "tenframe", "name": "Tenframe", "name_html": "Ten<em>frame</em>",
-        "kind": "Web app", "short": "Ten-slide Instagram carousels from a gallery",
-        "tag": "Worker",
-        "lede": "Drop in a gallery, get a ten-slide carousel.",
-        "meta": [("Platform", "Web · desktop"), ("Stack", "Cloudflare Workers · R2"), ("Status", "Live")],
-        "body": [
-            "Tenframe turns an upload of 40 to 100 images into a ten-slide, 1080 × 1440 Instagram carousel. An image tray on the left, a slide strip in the middle and a live Instagram preview on the right.",
-            "Each slide can take a preset layout, like bordered, landscape fit, stacked trio or staggered pair, and every carousel is saved so it can be revisited later.",
-        ],
-        "road": [("Carousel builder", "Upload, arrange, preview and export.", "Built"),
-                 ("Accounts", "Sign in with Google and keep your own projects.", "Next"),
-                 ("Open to photographers", "Tenframe for anyone who posts their work.", "Planned")],
-        "link": ("Open Tenframe", "https://tenframe.jordan-mansfield.workers.dev"),
-    },
-    {
-        "slug": "tonal", "name": "Tonal", "name_html": "To<em>nal</em>",
-        "kind": "Premiere Pro plugin", "short": "Proper sliders for Premiere’s classic Lumetri Color",
-        "tag": "Premiere",
-        "lede": "Proper sliders for Premiere Pro’s classic Lumetri Color.",
-        "meta": [("Works with", f"Premiere Pro {TONAL['min_premiere']} or later"), ("Version", TONAL["version"]), ("Tested on", "macOS")],
-        "body": [
-            "The latest Premiere Pro moves colour grading into a new Color tab. The classic Lumetri Color effect is still there to drag onto a clip, but its only controls are rows of raw numbers.",
-            "Tonal is a docked panel that puts sliders back on it: white balance, light, creative and vignette. It edits the Lumetri Color effect already on your clips, so Premiere’s own engine still does the grading. Select several clips and one move changes them all. Keyframes work like Effect Controls: once a setting is keyframed, a move sets a keyframe at the playhead.",
-            "Grade with real knobs, too. Plug in a MIDI controller such as a Behringer X-Touch Mini, click Learn beside a slider, and turn a knob. Buttons can undo, redo, reset and add keyframes, and the controller’s LED rings follow your grade from clip to clip.",
-        ],
-        "shot": ("assets/tonal-panel.jpg", "The Tonal panel: sliders for temperature, tint, saturation, exposure, contrast, highlights and shadows"),
-        "steps_title": "Install",
-        "steps": [("Download", "Get the .ccx file using the button above.", ""),
-                  ("Install", "Quit Premiere, then double-click the file. Creative Cloud asks you to confirm. It warns you to only install plugins from sources you trust.", ""),
-                  ("Open", "In Premiere, choose Window → UXP Plugins → Tonal, then dock the panel wherever suits you.", ""),
-                  ("Update", "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.", "")],
-        "steps2_title": "MIDI controllers",
-        "steps2": [("Get the Bridge", "Premiere plugins can’t talk to MIDI devices, so a small menu-bar app, Tonal Bridge, does it for them. Download it using the second button above. Mac only.", ""),
-                   ("Open it", "Unzip it and drag Tonal Bridge into Applications. The first time, right-click it and choose Open. It isn’t from the App Store, so macOS asks you to confirm, or to allow it under System Settings → Privacy & Security.", ""),
-                   ("Map your controls", "In Tonal, click MIDI, then Learn beside a slider and turn a knob. Press a button instead to make it reset that slider. Tonal remembers your mappings.", "")],
-        "road": [],
-        "link": (f"Download Tonal {TONAL['version']}", TONAL_FILE),
-        "link2": (f"Download Tonal Bridge {BRIDGE['version']} for Mac", BRIDGE_FILE),
-        "download": True,
-    },
-    {
-        "slug": "dolly", "name": "Dolly", "name_html": "Dol<em>ly</em>",
-        "kind": "Premiere Pro plugin", "short": "Slow push-ins on every clip, at one steady speed",
-        "tag": "Premiere",
-        "lede": "Slow push-ins for Premiere Pro, on every clip at once.",
-        "meta": [("Works with", f"Premiere Pro {DOLLY['min_premiere']} or later"), ("Version", DOLLY["version"])],
-        "body": [
-            "A subtle push-in means two Scale keyframes on every clip, set by hand hundreds of times a film. Presets help, but they reset a cropped clip’s Scale, and their keyframes drift off the clip as soon as you trim or slip it.",
-            "Dolly is a docked panel. Pick a speed, select your clips and click once. Every clip zooms from its own starting Scale at the same pace, with keyframes on its first and last frames. After an edit, Refit all puts every zoom back on its clip’s ends, keeping each clip’s speed.",
-        ],
-        "shot": ("assets/dolly-panel.jpg", "The Dolly panel: In and Out, a speed slider set to 0.5% a second, and a Push in button for 24 selected clips"),
-        "steps_title": "Install",
-        "steps": [("Download", "Get the .ccx file using the button above.", ""),
-                  ("Install", "Quit Premiere, then double-click the file. Creative Cloud asks you to confirm. It warns you to only install plugins from sources you trust.", ""),
-                  ("Open", "In Premiere, choose Window → UXP Plugins → Dolly, then dock the panel wherever suits you.", ""),
-                  ("Update", "When a new version is out, a notice appears in the panel. Download it and double-click the new file to replace the old one.", "")],
-        "road": [],
-        "link": (f"Download Dolly {DOLLY['version']}", DOLLY_FILE),
-        "download": True,
-    },
-]
+# Placeholders the copy in content/site.json can use.
+TOKENS = {
+    "{tonal.version}": TONAL["version"], "{tonal.min_premiere}": TONAL["min_premiere"], "{tonal.file}": TONAL_FILE,
+    "{bridge.version}": BRIDGE["version"], "{bridge.file}": BRIDGE_FILE,
+    "{dolly.version}": DOLLY["version"], "{dolly.min_premiere}": DOLLY["min_premiere"], "{dolly.file}": DOLLY_FILE,
+}
+
+
+def fill(value):
+    """Swap placeholders like {tonal.version} for the real numbers, all the way down."""
+    if isinstance(value, str):
+        for k, v in TOKENS.items():
+            value = value.replace(k, v)
+        return value
+    if isinstance(value, list):
+        return [fill(v) for v in value]
+    if isinstance(value, dict):
+        return {k: fill(v) for k, v in value.items()}
+    return value
+
+
+with open(os.path.join(ROOT, "content", "site.json"), encoding="utf-8") as f:
+    SITE = fill(json.load(f))
+HOME, FOOT, NF = SITE["home"], SITE["footer"], SITE["not_found"]
+PROJECTS = [p for p in SITE["projects"] if p.get("show", True)]
+
+
+def styled(text):
+    """*word* becomes italic, a new line becomes a line break (used for the big display names)."""
+    return re.sub(r"\*(.+?)\*", r"<em>\1</em>", text).replace("\n", "<br>")
+
 
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
@@ -172,7 +118,7 @@ def header(back=False):
 </header>'''
 
 
-FOOTER = '''<footer class="site-footer wrap"><span>© 2026 Jordan Mansfield</span><span>Horsham, West Sussex</span></footer>
+FOOTER = f'''<footer class="site-footer wrap"><span>{FOOT["left"]}</span><span>{FOOT["right"]}</span></footer>
 </body>
 </html>
 '''
@@ -192,44 +138,40 @@ def work_rows():
     return out
 
 
-index = head("Jordan Mansfield", "Wedding photographer in Horsham, West Sussex, building the software his work runs on.") + f'''
+about = "".join(f'<p class="muted">{t}</p>\n' for t in HOME["about"])
+contact_links = "".join(f'<li><a href="{l["url"]}">{l["label"]}</a></li>\n' for l in HOME["contact_links"])
+index = head(HOME["title"], HOME["description"]) + f'''
 {header()}
 <main id="main">
 <section class="hero">
 {leak("hero")}
 <div class="wrap hero__inner">
-<p class="eyebrow mono">Small software, happy accidents</p>
-<h1 class="display">Jordan<br><em>Mansfield</em></h1>
-<p class="intro">Wedding photographer in Horsham, West Sussex. Between shoots I build the software my work runs on: backup tools, editing plugins, and the back office behind it all.</p>
+<p class="eyebrow mono">{HOME["eyebrow"]}</p>
+<h1 class="display">{styled(HOME["display"])}</h1>
+<p class="intro">{HOME["intro"]}</p>
 </div>
 </section>
 
 <section id="work" class="wrap section">
-<div class="section__head"><h2>Work</h2><span class="mono muted">({len(PROJECTS):02d})</span></div>
+<div class="section__head"><h2>{HOME["work_title"]}</h2><span class="mono muted">({len(PROJECTS):02d})</span></div>
 <ol class="rows">
 {work_rows()}</ol>
 </section>
 
 <section id="about" class="wrap section split">
-<h2>About</h2>
+<h2>{HOME["about_title"]}</h2>
 <div class="split__body">
-<p class="pull">I grew up around my dad’s darkroom and started photographing weddings with him as a teenager.</p>
-<p class="muted">I studied Fashion Photography at London College of Fashion, then spent years as a sport and commercial photographer at Getty Images. I’ve photographed weddings full-time since 2021, and school portraits under MySchoolPhotograph.</p>
-<p class="muted">[A LINE ON WHY YOU BUILD SOFTWARE, IN YOUR WORDS]</p>
-</div>
+<p class="pull">{HOME["about_pull"]}</p>
+{about}</div>
 </section>
 
 <section id="contact" class="contact">
 {leak("contact")}
 <div class="wrap contact__inner">
-<p class="eyebrow mono">Contact</p>
-<a class="contact__big" href="mailto:[YOUR EMAIL]">Say hello <em>→</em></a>
+<p class="eyebrow mono">{HOME["contact_eyebrow"]}</p>
+<a class="contact__big" href="{HOME["contact_big_url"]}">{HOME["contact_big_label"]} <em>→</em></a>
 <ul class="contact__links">
-<li><a href="mailto:[YOUR EMAIL]">[YOUR EMAIL]</a></li>
-<li><a href="https://github.com/jordanmansfield-lang">GitHub ↗</a></li>
-<li><a href="https://jordanmansfieldweddings.com">Weddings ↗</a></li>
-<li><a href="https://www.myschoolphotograph.co.uk">School photography ↗</a></li>
-</ul>
+{contact_links}</ul>
 </div>
 </section>
 </main>
@@ -238,31 +180,39 @@ index = head("Jordan Mansfield", "Wedding photographer in Horsham, West Sussex, 
 with open(OUT + "/index.html", "w") as f:
     f.write(index)
 
-for i, p in enumerate(PROJECTS):
-    nxt = PROJECTS[(i + 1) % len(PROJECTS)]
-    meta = "".join(f'<div class="meta__item"><dt class="mono muted">{k}</dt><dd>{v}</dd></div>' for k, v in p["meta"])
-    body = "".join(f"<p>{b}</p>" for b in p["body"])
-    if p["link"] and p.get("download"):
-        link = f'<p class="cta"><a href="{p["link"][1]}" download>{p["link"][0]} ↓</a></p>'
-    elif p["link"]:
-        link = f'<p class="cta"><a href="{p["link"][1]}">{p["link"][0]} ↗</a></p>'
-    else:
-        link = ""
-    if p.get("link2"):   # an optional second download (e.g. a companion app)
-        link += f'<p class="cta"><a href="{p["link2"][1]}" download>{p["link2"][0]} ↓</a></p>'
-    if p.get("shot"):
-        shot = f'<figure class="shot"><img src="{p["shot"][0]}" alt="{html.escape(p["shot"][1])}"></figure>'
-    else:
-        shot = '<figure class="shot"><span class="mono muted">[SCREENSHOT]</span></figure>'
-    def rows_section(title, items):
-        if not items:
-            return ""
-        lis = "".join(f'''<li class="road__row"><span class="mono muted row__n">{j:02d}</span><span class="road__name">{a}</span><span class="muted road__desc">{b}</span><span class="mono road__status">{st}</span></li>''' for j, (a, b, st) in enumerate(items, 1))
-        return f'''<section class="wrap section">
+# Remove pages for projects that were deleted, hidden or renamed in /admin.
+keep = {"index.html", "404.html"} | {p["slug"] + ".html" for p in PROJECTS}
+for name in os.listdir(OUT):
+    if name.endswith(".html") and name not in keep:
+        os.remove(os.path.join(OUT, name))
+
+
+def rows_section(title, items):
+    if not items:
+        return ""
+    lis = "".join(f'''<li class="road__row"><span class="mono muted row__n">{j:02d}</span><span class="road__name">{r["name"]}</span><span class="muted road__desc">{r["text"]}</span><span class="mono road__status">{r["status"]}</span></li>''' for j, r in enumerate(items, 1))
+    return f'''<section class="wrap section">
 <div class="section__head"><h2>{title}</h2><span class="mono muted">({len(items):02d})</span></div>
 <ol class="rows">{lis}</ol>
 </section>'''
-    sections = rows_section(p.get("steps_title", ""), p.get("steps", [])) + rows_section(p.get("steps2_title", ""), p.get("steps2", [])) + rows_section("Roadmap", p["road"])
+
+
+for i, p in enumerate(PROJECTS):
+    nxt = PROJECTS[(i + 1) % len(PROJECTS)]
+    meta = "".join(f'<div class="meta__item"><dt class="mono muted">{m["label"]}</dt><dd>{m["value"]}</dd></div>' for m in p["meta"])
+    body = "".join(f"<p>{b}</p>" for b in p["body"])
+    link = ""
+    for l in p["links"]:
+        if l.get("download"):
+            link += f'<p class="cta"><a href="{l["url"]}" download>{l["label"]} ↓</a></p>'
+        else:
+            link += f'<p class="cta"><a href="{l["url"]}">{l["label"]} ↗</a></p>'
+    image = p.get("image") or {}
+    if image.get("src"):
+        shot = f'<figure class="shot"><img src="{image["src"]}" alt="{html.escape(image.get("alt", ""))}"></figure>'
+    else:
+        shot = '<figure class="shot"><span class="mono muted">[SCREENSHOT]</span></figure>'
+    sections = "".join(rows_section(s["title"], s["rows"]) for s in p["sections"])
     page = head(f'{p["name"]} — Jordan Mansfield', p["lede"]) + f'''
 {header(back=True)}
 <main id="main">
@@ -270,7 +220,7 @@ for i, p in enumerate(PROJECTS):
 {leak("project")}
 <div class="wrap hero__inner">
 <p class="eyebrow mono">{i+1:02d} — {p["kind"]}</p>
-<h1 class="display display--project">{p["name_html"]}</h1>
+<h1 class="display display--project">{styled(p["display"])}</h1>
 <p class="lede">{p["lede"]}</p>
 <dl class="meta">{meta}</dl>
 {link}
@@ -282,7 +232,7 @@ for i, p in enumerate(PROJECTS):
 </section>
 
 <section class="wrap section split">
-<h2>What it does</h2>
+<h2>{p.get("about_title") or "What it does"}</h2>
 <div class="split__body muted">{body}</div>
 </section>
 
@@ -302,9 +252,9 @@ notfound = head("Not found — Jordan Mansfield", "Page not found.") + f'''
 <section class="hero">
 {leak("hero")}
 <div class="wrap hero__inner">
-<p class="eyebrow mono">404 — Overexposed</p>
-<h1 class="display">Nothing<br><em>here</em></h1>
-<p class="intro"><a href="index.html">Back to the work →</a></p>
+<p class="eyebrow mono">{NF["eyebrow"]}</p>
+<h1 class="display">{styled(NF["display"])}</h1>
+<p class="intro"><a href="index.html">{NF["link_label"]}</a></p>
 </div>
 </section>
 </main>
@@ -315,7 +265,6 @@ with open(OUT + "/404.html", "w") as f:
 with open(OUT + "/assets/favicon.svg", "w") as f:
     f.write('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><radialGradient id="g" cx="0.3" cy="0.35" r="0.75"><stop offset="0" stop-color="#f2b25c"/><stop offset="0.55" stop-color="#e9772f"/><stop offset="1" stop-color="#e9772f" stop-opacity="0"/></radialGradient></defs><rect width="64" height="64" rx="14" fill="#f7f5f0"/><circle cx="26" cy="28" r="30" fill="url(#g)"/></svg>''')
 # ---------- plugin update feeds (each plugin reads its own version.json) ----------
-import json
 for slug, name, rel, rel_file in [("tonal", "Tonal", TONAL, TONAL_FILE), ("dolly", "Dolly", DOLLY, DOLLY_FILE)]:
     os.makedirs(f"{OUT}/downloads/{slug}", exist_ok=True)
     if not os.path.exists(f"{OUT}/{rel_file}"):

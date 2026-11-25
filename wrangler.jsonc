@@ -1,10 +1,22 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "jordanmansfield-software",
+  // Only /admin and /api/* run this script; every other page is served straight from public/.
+  "main": "worker/index.js",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./public",
+    "binding": "ASSETS",
     "html_handling": "drop-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/admin", "/admin/*", "/api/*"]
+  },
+  "rules": [{ "type": "Text", "globs": ["**/*.html"], "fallthrough": true }],
+  "vars": {
+    "GITHUB_REPO": "jordanmansfield-lang/jordanmansfield-software",
+    "GITHUB_BRANCH": "main"
   }
+  // Secrets, set in Cloudflare → this Worker → Settings → Variables and Secrets (type: Secret):
+  //   ADMIN_PASSWORD  the /admin password
+  //   GITHUB_TOKEN    fine-grained token for this repo: Contents read and write, Actions read
 }
