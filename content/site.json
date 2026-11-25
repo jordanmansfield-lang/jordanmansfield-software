@@ -15,11 +15,11 @@
     ],
     "contact_eyebrow": "Contact",
     "contact_big_label": "Say hello",
-    "contact_big_url": "mailto:[YOUR EMAIL]",
+    "contact_big_url": "mailto:jordan@jordanmansfield.co.uk",
     "contact_links": [
       {
-        "label": "[YOUR EMAIL]",
-        "url": "mailto:[YOUR EMAIL]"
+        "label": "Email ↗",
+        "url": "mailto:jordan@jordanmansfield.co.uk"
       },
       {
         "label": "GitHub ↗",
